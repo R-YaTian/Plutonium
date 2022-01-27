@@ -83,10 +83,15 @@ namespace pu::ui::elm
         return this->factor;
     }
 
-    Menu::Menu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow, s32 fontSize)
-        : Element::Element(), x(X), y(Y), w(Width), clr(OptionColor), isize(ItemSize), ishow(ItemsToShow)
+    Menu::Menu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow) : Element::Element()
     {
+        this->x = X;
+        this->y = Y;
+        this->w = Width;
+        this->clr = OptionColor;
         this->scb = { 110, 110, 110, 255 };
+        this->isize = ItemSize;
+        this->ishow = ItemsToShow;
         this->previsel = 0;
         this->isel = 0;
         this->fisel = 0;
