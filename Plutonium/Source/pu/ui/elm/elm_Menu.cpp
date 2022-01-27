@@ -2,19 +2,19 @@
 
 namespace pu::ui::elm
 {
-    MenuItem::MenuItem(const std::string& Name)
+    MenuItem::MenuItem(String Name)
     {
         this->clr = { 10, 10, 10, 255 };
         this->name = Name;
         this->hasicon = false;
     }
 
-    std::string MenuItem::GetName()
+    String MenuItem::GetName()
     {
         return this->name;
     }
 
-    void MenuItem::SetName(const std::string& Name)
+    void MenuItem::SetName(String Name)
     {
         this->name = Name;
     }
@@ -83,22 +83,26 @@ namespace pu::ui::elm
         return this->factor;
     }
 
-    Menu::Menu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow, s32 fontSize)
-        : Element::Element(), x(X), y(Y), w(Width), clr(OptionColor), isize(ItemSize), ishow(ItemsToShow)
+    Menu::Menu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow) : Element::Element()
     {
+        this->x = X;
+        this->y = Y;
+        this->w = Width;
+        this->clr = OptionColor;
         this->scb = { 110, 110, 110, 255 };
+        this->isize = ItemSize;
+        this->ishow = ItemsToShow;
         this->previsel = 0;
         this->isel = 0;
         this->fisel = 0;
         this->selfact = 255;
         this->pselfact = 0;
-        this->onselch = [&](){};
+        this->onselch = [&]() {};
         this->icdown = false;
         this->dtouch = false;
         this->fcs = { 40, 40, 40, 255 };
         this->basestatus = 0;
-        this->font = render::LoadDefaultFont(fontSize);
-        this->meme = render::LoadSharedFont(render::SharedFont::NintendoExtended, fontSize);
+        this->font_name = "DefaultFont@25";
     }
 
     s32 Menu::GetX()
@@ -266,34 +270,34 @@ namespace pu::ui::elm
                 auto loadedidx = i - this->fisel;
                 auto curname = this->loadednames[loadedidx];
                 auto curicon = this->loadedicons[loadedidx];
-                if(this->isel == i)
-                {
-                    Drawer->RenderRectangleFill(this->fcs, cx, cy, cw, ch);
-                    if(this->selfact < 255)
-                    {
-                        this->selfact += 48;
-                    }
-                }
-                else if(this->previsel == i)
+                if (this->isel == i)
                 {
                     Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
-                    if(this->pselfact > 0)
+                    if (this->selfact < 255)
                     {
+                        Drawer->RenderRectangleFill(Color(this->fcs.R, this->fcs.G, this->fcs.B, this->selfact), cx, cy, cw, ch);
+                        this->selfact += 48;
+                    }
+                    else Drawer->RenderRectangleFill(this->fcs, cx, cy, cw, ch);
+                }
+                else if (this->previsel == i)
+                {
+                    Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
+                    if (this->pselfact > 0)
+                    {
+                        Drawer->RenderRectangleFill(Color(this->fcs.R, this->fcs.G, this->fcs.B, this->pselfact), cx, cy, cw, ch);
                         this->pselfact -= 48;
                     }
+                    else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
                 }
                 else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
                 auto itm = this->itms[i];
-                s32 xh = render::GetTextureHeight(curname);
+                s32 xh = render::GetTextHeight(this->font_name, itm->GetName());
                 s32 tx = (cx + 25);
                 s32 ty = ((ch - xh) / 2) + cy;
                 if(itm->HasIcon())
                 {
-                    if (itm->GetFactor() == 0) {
-                        auto [w,h] = render::GetTextureSize(curicon);
-                        itm->SetFactor((float)h/w);
-                    }
-                    float factor = itm->GetFactor();
+                    float factor = (float)render::GetTextureHeight(curicon) / (float)render::GetTextureWidth(curicon);
                     s32 icw = (this->isize - 10);
                     s32 ich = icw;
                     s32 icx = (cx + 25);
@@ -514,7 +518,7 @@ namespace pu::ui::elm
         for(s32 i = this->fisel; i < (its + this->fisel); i++)
         {
             auto strname = this->itms[i]->GetName();
-            auto tex = render::RenderText(this->font, this->meme, strname, this->itms[i]->GetColor());
+            auto tex = render::RenderText(this->font_name, strname, this->itms[i]->GetColor());
             this->loadednames.push_back(tex);
             if(this->itms[i]->HasIcon())
             {
@@ -522,7 +526,7 @@ namespace pu::ui::elm
                 auto icontex = render::LoadImage(stricon);
                 this->loadedicons.push_back(icontex);
             }
-            else this->loadedicons.push_back(NULL);
+            else this->loadedicons.push_back(nullptr);
         }
     }
 }
