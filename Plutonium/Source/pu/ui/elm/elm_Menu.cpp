@@ -83,21 +83,16 @@ namespace pu::ui::elm
         return this->factor;
     }
 
-    Menu::Menu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow) : Element::Element()
+    Menu::Menu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow, s32 fontSize)
+        : Element::Element(), x(X), y(Y), w(Width), clr(OptionColor), isize(ItemSize), ishow(ItemsToShow)
     {
-        this->x = X;
-        this->y = Y;
-        this->w = Width;
-        this->clr = OptionColor;
         this->scb = { 110, 110, 110, 255 };
-        this->isize = ItemSize;
-        this->ishow = ItemsToShow;
         this->previsel = 0;
         this->isel = 0;
         this->fisel = 0;
         this->selfact = 255;
         this->pselfact = 0;
-        this->onselch = [&]() {};
+        this->onselch = [&](){};
         this->icdown = false;
         this->dtouch = false;
         this->fcs = { 40, 40, 40, 255 };
@@ -270,25 +265,21 @@ namespace pu::ui::elm
                 auto loadedidx = i - this->fisel;
                 auto curname = this->loadednames[loadedidx];
                 auto curicon = this->loadedicons[loadedidx];
-                if (this->isel == i)
+                if(this->isel == i)
                 {
-                    Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
-                    if (this->selfact < 255)
+                    Drawer->RenderRectangleFill(this->fcs, cx, cy, cw, ch);
+                    if(this->selfact < 255)
                     {
-                        Drawer->RenderRectangleFill(Color(this->fcs.R, this->fcs.G, this->fcs.B, this->selfact), cx, cy, cw, ch);
                         this->selfact += 48;
                     }
-                    else Drawer->RenderRectangleFill(this->fcs, cx, cy, cw, ch);
                 }
-                else if (this->previsel == i)
+                else if(this->previsel == i)
                 {
                     Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
-                    if (this->pselfact > 0)
+                    if(this->pselfact > 0)
                     {
-                        Drawer->RenderRectangleFill(Color(this->fcs.R, this->fcs.G, this->fcs.B, this->pselfact), cx, cy, cw, ch);
                         this->pselfact -= 48;
                     }
-                    else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
                 }
                 else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
                 auto itm = this->itms[i];
@@ -297,7 +288,12 @@ namespace pu::ui::elm
                 s32 ty = ((ch - xh) / 2) + cy;
                 if(itm->HasIcon())
                 {
-                    float factor = (float)render::GetTextureHeight(curicon) / (float)render::GetTextureWidth(curicon);
+                    if (itm->GetFactor() == 0) {
+                        auto h = render::GetTextureHeight(curicon);
+                        auto w = render::GetTextureWidth(curicon);
+                        itm->SetFactor((float)h/w);
+                    }
+                    float factor = itm->GetFactor();
                     s32 icw = (this->isize - 10);
                     s32 ich = icw;
                     s32 icx = (cx + 25);
@@ -338,7 +334,6 @@ namespace pu::ui::elm
                 s32 fcy = scy + (this->fisel * (sch / this->itms.size()));
                 Drawer->RenderRectangleFill(sclr, scx, fcy, scw, fch);
             }
-            //Drawer->RenderShadowSimple(cx, cy, cw, 5, 160);
         }
     }
 
