@@ -24,22 +24,9 @@ namespace pu::ui
 
     Dialog::~Dialog()
     {
-        if (this->title != nullptr)
-        {
-            render::DeleteTexture(this->title);
-            this->title = nullptr;
-        }
-        if (this->cnt != nullptr)
-        {
-            render::DeleteTexture(this->cnt);
-            this->cnt = nullptr;
-        }
-        if (this->hicon && (this->icon != nullptr))
-        {
-            render::DeleteTexture(this->icon);
-            this->icon = nullptr;
-            this->hicon = false;
-        }
+        render::DeleteTexture(this->title);
+        render::DeleteTexture(this->cnt);
+        render::DeleteTexture(this->icon);
         for (auto& opt : this->opts) render::DeleteTexture(opt);
     }
 
@@ -253,7 +240,7 @@ namespace pu::ui
             });
             if(!ok)
             {
-                app_ref->CallForRenderWithRenderOver([&](render::Renderer::Ref &Drawer) -> bool {});
+                app_ref->CallForRenderWithRenderOver([&](render::Renderer::Ref &Drawer) -> bool { return false; });
                 break;
             }
         }
