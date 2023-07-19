@@ -20,8 +20,8 @@ extern "C" void userAppExit()
 int main()
 {
     // First create our renderer, where one can customize SDL or other stuff's initialization.
-    auto renderer = pu::ui::render::Renderer::New(SDL_INIT_EVERYTHING, pu::ui::render::RendererInitOptions::RendererNoSound, pu::ui::render::RendererHardwareFlags);
-
+    auto renderer_opts = pu::ui::render::RendererInitOptions(SDL_INIT_EVERYTHING, pu::ui::render::RendererHardwareFlags).WithIMG(pu::ui::render::IMGAllFlags).WithMixer(pu::ui::render::MixerAllFlags).WithTTF().WithDefaultFontSize(30).WithRomfs();
+    auto renderer = pu::ui::render::Renderer::New(renderer_opts);
     // Create our main application from the renderer
     auto main = MainApplication::New(renderer);
 
