@@ -41,24 +41,27 @@ namespace pu::ui
         this->cbipt = Callback;
     }
 
-    s32 Application::ShowDialog(Dialog::Ref &ToShow)
+    i32 Application::CreateShowDialog(const std::string &title, const std::string &content, const std::vector<std::string> &opts, const bool use_last_opt_as_cancel, const std::string &icon_path)
     {
-        return ToShow->Show(this->rend, this);
-    }
-
-    int Application::CreateShowDialog(String Title, String Content, std::vector<String> Options, bool UseLastOptionAsCancel, std::string Icon)
-    {
-        Dialog dlg(Title, Content);
-        for(s32 i = 0; i < Options.size(); i++)
-        {
-            if(UseLastOptionAsCancel && (i == Options.size() - 1)) dlg.SetCancelOption(Options[i]);
-            else dlg.AddOption(Options[i]);
+        auto dialog = Dialog::New(title, content);
+        for(u32 i = 0; i < opts.size(); i++) {
+            const auto &opt = opts.at(i);
+            if(use_last_opt_as_cancel && (i == (opts.size() - 1)))
+                dialog->SetCancelOption(opt);
+            else
+                dialog->AddOption(opt);
         }
-        if(!Icon.empty()) dlg.SetIcon(Icon);
-        int opt = dlg.Show(this->rend, this);
-        if(dlg.UserCancelled()) opt = -1;
-        else if(!dlg.IsOk()) opt = -2;
-        return opt;
+
+        if(!icon_path.empty())
+            dialog->SetIcon(icon_path);
+
+        const auto opt = this->ShowDialog(dialog);
+        if(dialog->UserCancelled())
+            return -1;
+        else if(!dialog->IsOk())
+            return -2;
+        else
+            return opt;
     }
 
     void Application::EndOverlay()

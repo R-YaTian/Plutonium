@@ -1,262 +1,225 @@
 #include <pu/ui/ui_Dialog.hpp>
 #include <pu/ui/ui_Application.hpp>
-#include <cmath>
 
 namespace pu::ui
 {
-    Dialog::Dialog(String Title, String Content)
-    {
-        this->tfont_name = "DefaultFont@30";
-        this->cfont_name = "DefaultFont@20";
-        this->ofont_name = "DefaultFont@18";
-        this->stitle = Title;
-        this->scnt = Content;
-        this->title = render::RenderText(this->tfont_name, Title, { 10, 10, 10, 255 });
-        this->cnt = render::RenderText(this->cfont_name, Content, { 20, 20, 20, 255 });
-        this->osel = 0;
-        this->prevosel = 0;
-        this->selfact = 255;
-        this->pselfact = 0;
-        this->hicon = false;
-        this->cancel = false;
-        this->hcancel = false;
+    Dialog::Dialog(const std::string &title, const std::string &content) {
+        this->title_font_name = GetDefaultFont(DefaultFontSize::Large);
+        this->cnt_font_name = GetDefaultFont(DefaultFontSize::Medium);
+        this->opt_font_name = GetDefaultFont(DefaultFontSize::Small);
+        this->title = title;
+        this->cnt = content;
+        this->title_tex = render::RenderText(this->title_font_name, title, { 10, 10, 10, 255 });
+        this->cnt_tex = render::RenderText(this->cnt_font_name, content, { 20, 20, 20, 255 });
+        this->icon_tex = nullptr;
+        this->selected_opt_idx = 0;
+        this->prev_selected_opt_idx = 0;
+        this->selected_opt_over_alpha = 0xFF;
+        this->prev_selected_opt_over_alpha = 0;
+        this->user_cancelled = false;
     }
 
-    Dialog::~Dialog()
-    {
-        render::DeleteTexture(this->title);
-        render::DeleteTexture(this->cnt);
-        render::DeleteTexture(this->icon);
-        for (auto& opt : this->opts) render::DeleteTexture(opt);
+    Dialog::~Dialog() {
+        render::DeleteTexture(this->title_tex);
+        render::DeleteTexture(this->cnt_tex);
+        render::DeleteTexture(this->icon_tex);
+        for(auto &opt_tex: this->opt_texs)
+            render::DeleteTexture(opt_tex);
     }
 
-    void Dialog::AddOption(String Name)
-    {
-        this->opts.push_back(render::RenderText(this->ofont_name, Name, { 10, 10, 10, 255 }));
-        this->sopts.push_back(Name);
+    void Dialog::AddOption(const std::string &opt_name) {
+        this->opts.push_back(opt_name);
+        this->opt_texs.push_back(render::RenderText(this->opt_font_name, opt_name, { 10, 10, 10, 255 }));
     }
 
-    void Dialog::SetCancelOption(String Name)
-    {
-        this->hcancel = true;
-        this->scancel = Name;
+    void Dialog::SetIcon(const std::string &icon_path) {
+        render::DeleteTexture(this->icon_tex);
+        this->icon_tex = render::LoadImage(icon_path);
     }
 
-    void Dialog::RemoveCancelOption()
-    {
-        this->hcancel = false;
-        this->scancel = "";
-    }
+    i32 Dialog::Show(Application *app_ref) {
+        if(this->HasCancelOption())
+            this->AddOption(this->cancel_opt);
 
-    bool Dialog::HasCancelOption()
-    {
-        return this->hcancel;
-    }
+        if(this->opt_texs.empty())
+            return 0;
 
-    void Dialog::SetIcon(std::string Icon)
-    {
-        if (this->hicon) render::DeleteTexture(this->icon);
-        this->icon = render::LoadImage(Icon);
-        this->hicon = true;
-    }
-
-    bool Dialog::Hasicon()
-    {
-        return this->hicon;
-    }
-
-    s32 Dialog::Show(render::Renderer::Ref &Drawer, void *App)
-    {
-        if(this->hcancel) this->AddOption(this->scancel);
-        if(this->opts.empty()) return 0;
-        s32 dw = (20 * (this->opts.size() - 1)) + 250;
-        for(s32 i = 0; i < this->opts.size(); i++)
-        {
-            s32 tw = render::GetTextWidth(this->ofont_name, this->sopts[i]);
-            dw += tw + 20;
+        auto opts_width = (SpaceBetweenOptions * (this->opt_texs.size() - 1)) + 2 * OptionsBaseHorizontalMargin;
+        for(const auto &opt_tex : this->opt_texs) {
+            const auto opt_width = render::GetTextureWidth(opt_tex) + 2 * OptionHorizontalMargin;
+            opts_width += opt_width;
         }
-        if(dw > 1280) dw = 1280;
-        s32 icm = 30;
-        s32 elemh = 60;
-        s32 tdw = render::GetTextWidth(this->cfont_name, this->scnt) + 90;
-        if (tdw > dw) dw = tdw;
-        tdw = render::GetTextWidth(this->tfont_name, this->stitle) + 90;
-        if (tdw > dw) dw = tdw;
-        s32 ely = render::GetTextHeight(this->tfont_name, this->stitle) + render::GetTextHeight(this->cfont_name, this->scnt) + 140;
-        if(this->hicon)
-        {
-            s32 tely = render::GetTextureHeight(this->icon) + icm + 25;
-            if(tely > ely) ely = tely;
-            tdw = render::GetTextWidth(this->cfont_name, this->scnt) + 90 + render::GetTextureWidth(this->icon) + 20;
-            if (tdw > dw) dw = tdw;
-            tdw = render::GetTextWidth(this->tfont_name, this->stitle) + 90 + render::GetTextureWidth(this->icon) + 20;
-            if(tdw > dw) dw = tdw;
+        auto dialog_width = opts_width;
+
+        const auto cnt_width = render::GetTextureWidth(this->cnt_tex) + ContentExtraWidth;
+        if(cnt_width > dialog_width)
+            dialog_width = cnt_width;
+
+        const auto title_width = render::GetTextureWidth(this->title_tex) + TitleExtraWidth;
+        if(title_width > dialog_width)
+            dialog_width = title_width;
+        const auto title_cnt_height = TitleTopMargin + render::GetTextureHeight(this->title_tex) + render::GetTextureHeight(this->cnt_tex) + SpaceBetweenContentAndOptions;
+        auto opt_base_y = title_cnt_height;
+
+        if(this->HasIcon()) {
+            const auto icon_height = render::GetTextureHeight(this->icon_tex) + 2 * IconMargin;
+            if(icon_height > opt_base_y)
+                opt_base_y = icon_height;
+
+            const auto icon_width = render::GetTextureWidth(this->icon_tex) + 2 * IconMargin;
+
+            const auto icon_title_width = title_width + icon_width;
+            if(icon_title_width > dialog_width)
+                dialog_width = icon_title_width;
+
+            const auto icon_cnt_width = cnt_width + icon_width;
+            if(icon_cnt_width > dialog_width)
+                dialog_width = icon_cnt_width;
+
+            const auto icon_opts_width = opts_width + icon_width;
+            if(icon_opts_width > dialog_width)
+                dialog_width = icon_opts_width;
         }
-        if(dw > 1280) dw = 1280;
-        s32 dh = ely + elemh + 30;
-        if(dh > 720) dh = 720;
-        s32 dx = (1280 - dw) / 2;
-        s32 dy = (720 - dh) / 2;
-        ely += dy;
-        s32 elemw = ((dw - (20 * (this->opts.size() + 1))) / this->opts.size());
-        s32 elx = dx + ((dw - ((elemw * this->opts.size()) + (20 * (this->opts.size() - 1)))) / 2);
-        s32 r = 35;
-        s32 nr = 180;
-        s32 ng = 180;
-        s32 nb = 200;
-        bool end = false;
-        s32 initfact = 0;
-        auto app_ref = reinterpret_cast<Application*>(App);
-        while(true)
-        {
-            bool ok = app_ref->CallForRenderWithRenderOver([&](render::Renderer::Ref& Drawer) -> bool
-            {
-                const auto k = app_ref->GetButtonsDown();
-                const auto h = app_ref->GetButtonsHeld();
+
+        if(dialog_width > render::ScreenWidth)
+            dialog_width = render::ScreenWidth;
+
+        auto dialog_height = opt_base_y + OptionHeight + OptionBottomMargin;
+        if(dialog_height > render::ScreenHeight)
+            dialog_height = render::ScreenHeight;
+
+        const auto dialog_x = (render::ScreenWidth - dialog_width) / 2;
+        const auto dialog_y = (render::ScreenHeight - dialog_height) / 2;
+        opt_base_y += dialog_y;
+
+        auto is_finishing = false;
+        i32 initial_fade_alpha = 0;
+        while(true) {
+            const auto ok = app_ref->CallForRenderWithRenderOver([&](render::Renderer::Ref &drawer) -> bool {
+                const auto keys_down = app_ref->GetButtonsDown();
                 const auto tch_state = app_ref->GetTouchState();
-                const auto tch_x = tch_state.touches[0].x;
-                const auto tch_y = tch_state.touches[0].y;
-                if (k & HidNpadButton_AnyLeft)
-                {
-                    if(this->osel > 0)
-                    {
-                        this->prevosel = this->osel;
-                        this->osel--;
-                        for(s32 i = 0; i < this->opts.size(); i++)
-                        {
-                            if(i == this->osel) this->selfact = 0;
-                            else if(i == this->prevosel) this->pselfact = 255;
-                        }
+                const TouchPoint tch_pos = { tch_state.touches[0].x, tch_state.touches[0].y };
+                if(keys_down & HidNpadButton_AnyLeft) {
+                    if(this->selected_opt_idx > 0) {
+                        this->prev_selected_opt_idx = this->selected_opt_idx;
+                        this->selected_opt_idx--;
+                        this->selected_opt_over_alpha = 0;
+                        this->prev_selected_opt_over_alpha = 0xFF;
                     }
                 }
-                else if (k & HidNpadButton_AnyRight)
-                {
-                    if(this->osel < (this->opts.size() - 1))
-                    {
-                        this->prevosel = this->osel;
-                        this->osel++;
-                        for(s32 i = 0; i < this->opts.size(); i++)
-                        {
-                            if(i == this->osel) this->selfact = 0;
-                            else if(i == this->prevosel) this->pselfact = 255;
-                        }
+                else if(keys_down & HidNpadButton_AnyRight) {
+                    if(this->selected_opt_idx < (this->opt_texs.size() - 1)) {
+                        this->prev_selected_opt_idx = this->selected_opt_idx;
+                        this->selected_opt_idx++;
+                        this->selected_opt_over_alpha = 0;
+                        this->prev_selected_opt_over_alpha = 0xFF;
                     }
                 }
-                else if (k & HidNpadButton_A)
-                {
-                    this->cancel = false;
-                    end = true;
+                else if(keys_down & HidNpadButton_A) {
+                    this->user_cancelled = false;
+                    is_finishing = true;
                 }
-                else if (k & HidNpadButton_B)
-                {
-                    this->cancel = true;
-                    end = true;
+                else if(keys_down & HidNpadButton_B) {
+                    this->user_cancelled = true;
+                    is_finishing = true;
                 }
-                if (tch_state.count > 0)
-                {
-                    for(s32 i = 0; i < this->opts.size(); i++)
-                    {
-                        String txt = this->sopts[i];
-                        s32 rx = elx + ((elemw + 20) * i);
-                        s32 ry = ely;
-                        if (((rx + elemw) > tch_x) && (tch_x > rx) && ((ry + elemh) > tch_y) && (tch_y > ry))
-                        {
-                            this->osel = i;
-                            this->cancel = false;
-                            end = true;
+                if(tch_state.count > 0) {
+                    auto cur_opt_x = dialog_x + OptionsBaseHorizontalMargin;
+                    for(u32 i = 0; i < this->opts.size(); i++) {
+                        auto &opt_tex = this->opt_texs.at(i);
+                        const auto opt_name_width = render::GetTextureWidth(opt_tex);
+                        const auto opt_width = opt_name_width + 2 * OptionHorizontalMargin;
+
+                        if(tch_pos.HitsRegion(cur_opt_x, opt_base_y, opt_width, OptionHeight)) {
+                            this->selected_opt_idx = i;
+                            this->user_cancelled = false;
+                            is_finishing = true;
+                            break;
                         }
+
+                        cur_opt_x += opt_width + SpaceBetweenOptions;
                     }
                 }
-                s32 bw = dw;
-                s32 bh = dh;
-                s32 fw = bw - (r * 2);
-                s32 fh = bh - (r * 2);
-                Color clr = { 225, 225, 225, initfact };
-                s32 aclr = initfact;
-                if(aclr < 0) aclr = 0;
-                if(aclr > 125) aclr = 125;
-                Drawer->RenderRectangleFill({ 0, 0, 0, (u8)aclr }, 0, 0, 1280, 720);
-                Drawer->RenderRoundedRectangleFill(clr, dx, dy, bw, bh, r);
-                render::SetAlphaValue(this->title, initfact);
-                render::SetAlphaValue(this->cnt, initfact);
-                Drawer->RenderTexture(this->title, (dx + 45), (dy + 55));
-                Drawer->RenderTexture(this->cnt, (dx + 45), (dy + 140));
-                if(this->hicon)
-                {
-                    s32 icw = render::GetTextureWidth(this->icon);
-                    s32 icx = dx + (dw - (icw + icm));
-                    s32 icy = dy + icm;
-                    Drawer->RenderTexture(this->icon, icx, icy, { initfact, -1, -1, -1.0f });
+
+                const auto dialog_clr = MakeDialogColor(static_cast<u8>(initial_fade_alpha));
+                auto screen_fade_alpha = initial_fade_alpha;
+                if(screen_fade_alpha < 0)
+                    screen_fade_alpha = 0;
+                if(screen_fade_alpha > MaxScreenFadeAlpha)
+                    screen_fade_alpha = MaxScreenFadeAlpha;
+                const Color screen_fade_clr = { 0, 0, 0, static_cast<u8>(screen_fade_alpha) };
+                drawer->RenderRectangleFill(screen_fade_clr, 0, 0, render::ScreenWidth, render::ScreenHeight);
+                drawer->RenderRoundedRectangleFill(dialog_clr, dialog_x, dialog_y, dialog_width, dialog_height, DialogBorderRadius);
+                render::SetAlphaValue(this->title_tex, initial_fade_alpha);
+                render::SetAlphaValue(this->cnt_tex, initial_fade_alpha);
+                drawer->RenderTexture(this->title_tex, dialog_x + TitleX, dialog_y + TitleY);
+                drawer->RenderTexture(this->cnt_tex, dialog_x + ContentX, dialog_y + ContentY);
+
+                if(this->HasIcon()) {
+                    const auto icon_width = render::GetTextureWidth(this->icon_tex);
+                    const auto icon_x = dialog_x + (dialog_width - (icon_width + 2 * IconMargin));
+                    const auto icon_y = dialog_y + IconMargin;
+                    drawer->RenderTexture(this->icon_tex, icon_x, icon_y, render::TextureRenderOptions::WithCustomAlpha(static_cast<u8>(initial_fade_alpha)));
                 }
-                for(s32 i = 0; i < this->opts.size(); i++)
-                {
-                    String txt = this->sopts[i];
-                    s32 tw = render::GetTextWidth(this->ofont_name, txt);
-                    s32 th = render::GetTextHeight(this->ofont_name, txt);
-                    s32 tx = elx + ((elemw - tw) / 2) + ((elemw + 20) * i);
-                    s32 ty = ely + ((elemh - th) / 2);
-                    s32 rx = elx + ((elemw + 20) * i);
-                    s32 ry = ely;
-                    s32 rr = (elemh / 2);
-                    Color dclr = { nr, ng, nb, initfact };
-                    if(this->osel == i)
-                    {
-                        if(this->selfact < 255)
-                        {
-                            dclr = { nr, ng, nb, this->selfact };
-                            Drawer->RenderRoundedRectangleFill(dclr, rx, ry, elemw, elemh, rr);
-                            this->selfact += 48;
+
+                auto cur_opt_x = dialog_x + OptionsBaseHorizontalMargin;
+                for(u32 i = 0; i < this->opt_texs.size(); i++) {
+                    auto &opt_tex = this->opt_texs.at(i);
+                    const auto opt_name_width = render::GetTextureWidth(opt_tex);
+                    const auto opt_name_height = render::GetTextureHeight(opt_tex);
+                    const auto opt_width = opt_name_width + 2 * OptionHorizontalMargin;
+                    const auto opt_name_x = cur_opt_x + OptionHorizontalMargin;
+                    const auto opt_name_y = opt_base_y + ((OptionHeight - opt_name_height) / 2);
+                    if(this->selected_opt_idx == i) {
+                        if(this->selected_opt_over_alpha < 0xFF) {
+                            const auto over_clr = MakeOverColor(static_cast<u8>(this->selected_opt_over_alpha));
+                            drawer->RenderRoundedRectangleFill(over_clr, cur_opt_x, opt_base_y, opt_width, OptionHeight, OptionBorderRadius);
+                            this->selected_opt_over_alpha += OverAlphaIncrement;
                         }
-                        else
-                        {
-                            dclr = { nr, ng, nb, initfact };
-                            Drawer->RenderRoundedRectangleFill(dclr, rx, ry, elemw, elemh, rr);
+                        else {
+                            this->selected_opt_over_alpha = 0xFF;
+                            const auto over_clr = MakeOverColor(static_cast<u8>(initial_fade_alpha));
+                            drawer->RenderRoundedRectangleFill(over_clr, cur_opt_x, opt_base_y, opt_width, OptionHeight, OptionBorderRadius);
                         }
                     }
-                    else if(this->prevosel == i)
-                    {
-                        if(this->pselfact > 0)
-                        {
-                            dclr = { nr, ng, nb, this->pselfact };
-                            Drawer->RenderRoundedRectangleFill(dclr, rx, ry, elemw, elemh, rr);
-                            this->pselfact -= 48;
+                    else if(this->prev_selected_opt_idx == static_cast<i32>(i)) {
+                        if(this->prev_selected_opt_over_alpha > 0) {
+                            const auto over_clr = MakeOverColor(static_cast<u8>(this->prev_selected_opt_over_alpha));
+                            drawer->RenderRoundedRectangleFill(over_clr, cur_opt_x, opt_base_y, opt_width, OptionHeight, OptionBorderRadius);
+                            this->prev_selected_opt_over_alpha -= OverAlphaIncrement;
+                        }
+                        else {
+                            this->prev_selected_opt_over_alpha = 0;
                         }
                     }
-                    render::SetAlphaValue(this->opts[i], initfact);
-                    Drawer->RenderTexture(this->opts[i], tx, ty);
+
+                    render::SetAlphaValue(opt_tex, static_cast<u8>(initial_fade_alpha));
+                    drawer->RenderTexture(opt_tex, opt_name_x, opt_name_y);
+                    cur_opt_x += opt_width + SpaceBetweenOptions;
                 }
-                if(end)
-                {
-                    if(initfact == 0) return false;
-                    if(initfact > 0) initfact -= 25;
-                    if(initfact < 0) initfact = 0;
-                }
-                else
-                {
-                    if(initfact < 255) initfact += 25;
-                    if(initfact > 255) initfact = 255;
+
+                if(is_finishing) {
+                    if(initial_fade_alpha == 0)
+                        return false;
+                    if(initial_fade_alpha > 0)
+                        initial_fade_alpha -= FadeAlphaIncrement;
+                    if(initial_fade_alpha < 0)
+                        initial_fade_alpha = 0;
+                } else {
+                    if(initial_fade_alpha < 0xFF)
+                        initial_fade_alpha += FadeAlphaIncrement;
+                    if(initial_fade_alpha > 0xFF)
+                        initial_fade_alpha = 0xFF;
                 }
                 return true;
             });
-            if(!ok)
-            {
-                app_ref->CallForRenderWithRenderOver([&](render::Renderer::Ref &Drawer) -> bool { return false; });
+
+            if(!ok) {
+                app_ref->CallForRenderWithRenderOver([](render::Renderer::Ref&) -> bool { return false; });
                 break;
             }
         }
-        return this->osel;
-    }
 
-    bool Dialog::UserCancelled()
-    {
-        return this->cancel;
-    }
-
-    bool Dialog::IsOk()
-    {
-        bool ok = true;
-        if(this->cancel) ok = false;
-        if(this->hcancel && (this->osel == (this->opts.size() - 1))) ok = false;
-        return ok;
+        return this->selected_opt_idx;
     }
 }

@@ -7,7 +7,7 @@ namespace pu::ui::elm
         this->x = X;
         this->y = Y;
         this->ntex = nullptr;
-        this->rendopts = render::TextureRenderOptions::Default;
+        this->rendopts = render::TextureRenderOptions::Default();
         this->SetImage(Image);
     }
 
@@ -15,7 +15,7 @@ namespace pu::ui::elm
         : Element::Element(), x(X), y(Y)
     {
         render::DeleteTexture(this->ntex);
-        this->rendopts = render::TextureRenderOptions::Default;
+        this->rendopts = render::TextureRenderOptions::Default();
         this->SetJpegImage(jpegbuffer, size);
     }
 
@@ -23,7 +23,7 @@ namespace pu::ui::elm
         : Element::Element(), x(X), y(Y)
     {
         render::DeleteTexture(this->ntex);
-        this->rendopts = render::TextureRenderOptions::Default;
+        this->rendopts = render::TextureRenderOptions::Default();
         this->SetRgbImage(rgbBuffer, width, height, depth);
     }
 
