@@ -50,8 +50,10 @@ namespace pu::ui
 
             void AddThread(std::function<void()> Callback);
             void SetOnInput(std::function<void(u64 Down, u64 Up, u64 Held, Touch Pos)> Callback);
-            i32 ShowDialog(Dialog::Ref &ToShow);
-            int CreateShowDialog(String Title, String Content, std::vector<String> Options, bool UseLastOptionAsCancel, std::string Icon = "");
+            inline i32 ShowDialog(Dialog::Ref &dialog) {
+                return dialog->Show(this);
+            }
+            i32 CreateShowDialog(const std::string &title, const std::string &content, const std::vector<std::string> &opts, const bool use_last_opt_as_cancel, const std::string &icon_path = "");
 
             template<typename O>
             inline void StartOverlay(std::shared_ptr<O> Overlay)

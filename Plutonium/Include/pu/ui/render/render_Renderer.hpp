@@ -20,6 +20,9 @@
 
 namespace pu::ui::render
 {
+    constexpr u32 ScreenWidth = 1280;
+    constexpr u32 ScreenHeight = 720;
+
     struct RendererInitOptions
     {
         u32 SDLFlags;
@@ -86,11 +89,27 @@ namespace pu::ui::render
         i32 Height;
         float Angle;
 
-        // No extra alpha, no custom size, no rotation
-        static const TextureRenderOptions Default;
-    };
+        static constexpr i32 NoAlpha = -1;
+        static constexpr i32 NoWidth = -1;
+        static constexpr i32 NoHeight = -1;
+        static constexpr float NoRotation = -1.0f;
 
-    inline constexpr const TextureRenderOptions TextureRenderOptions::Default = { .AlphaMod = -1, .Width = -1, .Height = -1, .Angle = -1.0f };
+        static constexpr TextureRenderOptions Default() {
+            return { NoAlpha, NoWidth, NoHeight, NoRotation };
+        }
+
+        static constexpr TextureRenderOptions WithCustomAlpha(const u8 alpha) {
+            return { alpha, NoWidth, NoHeight, NoRotation };
+        }
+
+        static constexpr TextureRenderOptions WithCustomDimensions(const i32 width, const i32 height) {
+            return { NoAlpha, width, height, NoRotation };
+        }
+
+        static constexpr TextureRenderOptions WithCustomAlphaAndDimensions(const u8 alpha, const i32 width, const i32 height) {
+            return { alpha, width, height, NoRotation };
+        }
+    };
 
     class Renderer
     {
@@ -104,7 +123,7 @@ namespace pu::ui::render
             bool HasRomFs();
             void InitializeRender(Color Color);
             void FinalizeRender();
-            void RenderTexture(sdl2::Texture Texture, i32 X, i32 Y, TextureRenderOptions Options = TextureRenderOptions::Default);
+            void RenderTexture(sdl2::Texture Texture, i32 X, i32 Y, TextureRenderOptions Options = TextureRenderOptions::Default());
             void RenderRectangle(Color Color, i32 X, i32 Y, i32 Width, i32 Height);
             void RenderRectangleFill(Color Color, i32 X, i32 Y, i32 Width, i32 Height);
             void RenderRectangleOutline(Color Color, u32 X, u32 Y, u32 Width, u32 Height, u32 BorderWidth);
