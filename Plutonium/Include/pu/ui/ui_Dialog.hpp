@@ -40,7 +40,7 @@ namespace pu::ui
 
             static constexpr u32 OptionsBaseHorizontalMargin = 20;
             static constexpr u32 OptionHeight = 60;
-            static constexpr u32 OptionHorizontalMargin = 10;
+            static constexpr u32 OptionHorizontalMargin = 12;
             static constexpr u32 OptionBorderRadius = OptionHeight / 3;
             static constexpr u32 OptionBottomMargin = 25;
 
