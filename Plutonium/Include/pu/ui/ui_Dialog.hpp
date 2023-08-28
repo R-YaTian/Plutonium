@@ -24,7 +24,8 @@ namespace pu::ui
             static constexpr u32 DialogExtraBaseWidth = 250;
             static constexpr u32 DialogBorderRadius = 35;
 
-            static constexpr u32 SpaceBetweenOptions = 10;
+            static constexpr u32 SpaceBetweenOptions = 20;
+            static constexpr u32 SpaceBetweenOptionRows = 10;
 
             static constexpr u32 TitleExtraWidth = 90;
             static constexpr u32 ContentExtraWidth = 90;
@@ -38,9 +39,9 @@ namespace pu::ui
 
             static constexpr u32 IconExtraHeight = 25;
 
-            static constexpr u32 OptionsBaseHorizontalMargin = 20;
+            static constexpr u32 OptionsBaseHorizontalMargin = 45;
             static constexpr u32 OptionHeight = 60;
-            static constexpr u32 OptionHorizontalMargin = 12;
+            static constexpr u32 OptionHorizontalMargin = 30;
             static constexpr u32 OptionBorderRadius = OptionHeight / 3;
             static constexpr u32 OptionBottomMargin = 25;
 
