@@ -1362,6 +1362,7 @@ SDL_Surface *TTF_RenderUTF8_Solid(TTF_Font *ttf_font,
     int xstart;
     int width;
     int height;
+    int max_ascent = ttf_font->ascent;  /* Track maximum ascent during rendering */
     SDL_Surface* textbuf;
     SDL_Palette* palette;
     Uint8* src;
@@ -1419,6 +1420,11 @@ SDL_Surface *TTF_RenderUTF8_Solid(TTF_Font *ttf_font,
 
         font = TTF_CppWrap_FindValidFont(orig_font, c);
 
+        /* Update maximum ascent during rendering for baseline alignment */
+        if (font->ascent > max_ascent) {
+            max_ascent = font->ascent;
+        }
+
         /* check kerning */
         use_kerning = FT_HAS_KERNING( font->face ) && font->kerning;
 
@@ -1451,14 +1457,16 @@ SDL_Surface *TTF_RenderUTF8_Solid(TTF_Font *ttf_font,
         for ( row = 0; row < current->rows; ++row ) {
             /* Make sure we don't go either over, or under the
              * limit */
-            if ( row+glyph->yoffset < 0 ) {
+            /* Adjust y position using the maximum ascent for proper baseline alignment */
+            int adjusted_yoffset = max_ascent - font->ascent + glyph->yoffset;
+            if ( row+adjusted_yoffset < 0 ) {
                 continue;
             }
-            if ( row+glyph->yoffset >= textbuf->h ) {
+            if ( row+adjusted_yoffset >= textbuf->h ) {
                 continue;
             }
             dst = (Uint8*) textbuf->pixels +
-                (row+glyph->yoffset) * textbuf->pitch +
+                (row+adjusted_yoffset) * textbuf->pitch +
                 xstart + glyph->minx;
             src = current->buffer + row * current->pitch;
 
@@ -1544,6 +1552,7 @@ SDL_Surface *TTF_RenderUTF8_Shaded(TTF_Font *ttf_font,
     int xstart;
     int width;
     int height;
+    int max_ascent = ttf_font->ascent;  /* Track maximum ascent during rendering */
     SDL_Surface* textbuf;
     SDL_Palette* palette;
     int index;
@@ -1608,6 +1617,11 @@ SDL_Surface *TTF_RenderUTF8_Shaded(TTF_Font *ttf_font,
 
         font = TTF_CppWrap_FindValidFont(orig_font, c);
 
+        /* Update maximum ascent during rendering for baseline alignment */
+        if (font->ascent > max_ascent) {
+            max_ascent = font->ascent;
+        }
+
         /* check kerning */
         use_kerning = FT_HAS_KERNING( font->face ) && font->kerning;
 
@@ -1640,14 +1654,16 @@ SDL_Surface *TTF_RenderUTF8_Shaded(TTF_Font *ttf_font,
         for ( row = 0; row < current->rows; ++row ) {
             /* Make sure we don't go either over, or under the
              * limit */
-            if ( row+glyph->yoffset < 0 ) {
+            /* Adjust y position using the maximum ascent for proper baseline alignment */
+            int adjusted_yoffset = max_ascent - font->ascent + glyph->yoffset;
+            if ( row+adjusted_yoffset < 0 ) {
                 continue;
             }
-            if ( row+glyph->yoffset >= textbuf->h ) {
+            if ( row+adjusted_yoffset >= textbuf->h ) {
                 continue;
             }
             dst = (Uint8*) textbuf->pixels +
-                (row+glyph->yoffset) * textbuf->pitch +
+                (row+adjusted_yoffset) * textbuf->pitch +
                 xstart + glyph->minx;
             src = current->buffer + row * current->pitch;
             for ( col=width; col>0 && dst < dst_check; --col ) {
@@ -1734,6 +1750,7 @@ SDL_Surface *TTF_RenderUTF8_Blended(TTF_Font *ttf_font,
     SDL_bool first;
     int xstart;
     int width, height;
+    int max_ascent = ttf_font->ascent;  /* Track maximum ascent during rendering */
     SDL_Surface *textbuf;
     Uint32 alpha;
     Uint32 pixel;
@@ -1783,6 +1800,11 @@ SDL_Surface *TTF_RenderUTF8_Blended(TTF_Font *ttf_font,
 
         font = TTF_CppWrap_FindValidFont(orig_font, c);
 
+        /* Update maximum ascent during rendering for baseline alignment */
+        if (font->ascent > max_ascent) {
+            max_ascent = font->ascent;
+        }
+
         /* check kerning */
         use_kerning = FT_HAS_KERNING( font->face ) && font->kerning;
 
@@ -1815,14 +1837,16 @@ SDL_Surface *TTF_RenderUTF8_Blended(TTF_Font *ttf_font,
         for ( row = 0; row < glyph->pixmap.rows; ++row ) {
             /* Make sure we don't go either over, or under the
              * limit */
-            if ( row+glyph->yoffset < 0 ) {
+            /* Adjust y position using the maximum ascent for proper baseline alignment */
+            int adjusted_yoffset = max_ascent - font->ascent + glyph->yoffset;
+            if ( row+adjusted_yoffset < 0 ) {
                 continue;
             }
-            if ( row+glyph->yoffset >= textbuf->h ) {
+            if ( row+adjusted_yoffset >= textbuf->h ) {
                 continue;
             }
             dst = (Uint32*) textbuf->pixels +
-                (row+glyph->yoffset) * textbuf->pitch/4 +
+                (row+adjusted_yoffset) * textbuf->pitch/4 +
                 xstart + glyph->minx;
 
             /* Added code to adjust src pointer for pixmaps to
@@ -1911,6 +1935,7 @@ SDL_Surface *TTF_RenderUTF8_Blended_Wrapped(TTF_Font *ttf_font,
     SDL_bool first;
     int xstart;
     int width, height;
+    int max_ascent = ttf_font->ascent;  /* Track maximum ascent during rendering */
     SDL_Surface *textbuf;
     Uint32 alpha;
     Uint32 pixel;
@@ -2058,6 +2083,11 @@ SDL_Surface *TTF_RenderUTF8_Blended_Wrapped(TTF_Font *ttf_font,
             }
 
             font = TTF_CppWrap_FindValidFont(orig_font, c);
+            
+            /* Update maximum ascent during rendering for baseline alignment */
+            if (font->ascent > max_ascent) {
+                max_ascent = font->ascent;
+            }
 
             /* check kerning */
             use_kerning = FT_HAS_KERNING( font->face ) && font->kerning;
@@ -2091,14 +2121,16 @@ SDL_Surface *TTF_RenderUTF8_Blended_Wrapped(TTF_Font *ttf_font,
             for ( row = 0; row < glyph->pixmap.rows; ++row ) {
                 /* Make sure we don't go either over, or under the
                  * limit */
-                if ( row+glyph->yoffset < 0 ) {
+                /* Adjust y position using the maximum ascent for proper baseline alignment */
+                int adjusted_yoffset = max_ascent - font->ascent + glyph->yoffset;
+                if ( row+adjusted_yoffset < 0 ) {
                     continue;
                 }
-                if ( row+glyph->yoffset >= textbuf->h ) {
+                if ( row+adjusted_yoffset >= textbuf->h ) {
                     continue;
                 }
                 dst =  ((Uint32*)textbuf->pixels + rowSize * line) +
-                (row+glyph->yoffset) * textbuf->pitch/4 +
+                (row+adjusted_yoffset) * textbuf->pitch/4 +
                 xstart + glyph->minx;
 
                 /* Added code to adjust src pointer for pixmaps to
