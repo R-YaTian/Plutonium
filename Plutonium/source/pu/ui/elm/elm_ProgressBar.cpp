@@ -18,7 +18,14 @@ namespace pu::ui::elm {
     void ProgressBar::OnRender(render::Renderer::Ref &drawer, const s32 x, const s32 y) {
         const auto progress_width = (s32)((this->val / this->max_val) * (double)this->w);
         drawer->RenderRoundedRectangleFill(this->bg_clr, x, y, this->w, this->h, this->radius);
-        drawer->RenderRoundedRectangleFill(this->progress_clr, x, y, progress_width, this->h, radius);
+        if (this->val == this->max_val) {
+            drawer->RenderRoundedRectangleFill(this->progress_clr, x, y, this->w, this->h, this->radius);
+        }
+        else if (progress_width > 0) {
+            drawer->BeginClipRect(x, y, progress_width, this->h);
+            drawer->RenderRoundedRectangleFill(this->progress_clr, x, y, this->w, this->h, this->radius);
+            drawer->EndClipRect();
+        }
     }
 
 }

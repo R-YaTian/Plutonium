@@ -356,7 +356,27 @@ namespace pu::ui::render {
              * @note This function should be called each render loop / OnRender call.
              */
             void RenderShadowSimple(const s32 x, const s32 y, const s32 width, const s32 height, const s32 base_alpha, const u8 main_alpha = 0xFF);
-            
+
+            /**
+             * @brief Begins a rectangular clipping region.
+             * @param x The X position of the clipping region.
+             * @param y The Y position of the clipping region.
+             * @param width The width of the clipping region.
+             * @param height The height of the clipping region.
+             * @note All subsequent rendering calls will be clipped to this region
+             *       until EndClipRect() is called.
+             * @note This function should be paired with EndClipRect() within the same
+             *       render loop / OnRender call.
+             */
+            void BeginClipRect(s32 x, s32 y, s32 width, s32 height);
+
+            /**
+             * @brief Ends the currently active clipping region.
+             * @note Restores rendering to an unclipped state.
+             * @note This function should only be called after BeginClipRect().
+             */
+            void EndClipRect();
+
             /**
              * @brief Sets the base render position for all rendering functions.
              * @param x The X position to use as the base render position.

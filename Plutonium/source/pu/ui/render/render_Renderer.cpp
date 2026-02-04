@@ -274,6 +274,20 @@ namespace pu::ui::render {
         }
     }
 
+    void Renderer::BeginClipRect(s32 x, s32 y, s32 width, s32 height) {
+        SDL_Rect clip {
+            x + this->base_x,
+            y + this->base_y,
+            width,
+            height
+        };
+        SDL_RenderSetClipRect(g_Renderer, &clip);
+    }
+
+    void Renderer::EndClipRect() {
+        SDL_RenderSetClipRect(g_Renderer, nullptr);
+    }
+
     sdl2::Renderer GetMainRenderer() {
         return g_Renderer;
     }
