@@ -534,9 +534,11 @@ namespace pu::ui::render {
      * @param clr The color to use for the text.
      * @param max_width The maximum width of the text.
      * @param max_height The maximum height of the text.
-     * @note If max_width or max_height are 0, they will be ignored. If the text exceeds the dimensions, it will be clamped and ended by appending "...".
+     * @param preserve_tail_len The number of characters to preserve at the end of the text when clamping.
+     * @param truncation_marker The string to append when the text is truncated.
+     * @note If max_width or max_height are 0, they will be ignored. If the text exceeds the dimensions, it will be clamped and ended by appending the truncation_marker.
      * @return The rendered text texture. If the font is not available, nullptr will be returned.
      */
-    sdl2::Texture RenderText(const std::string &font_name, const std::string &text, const Color clr, const u32 max_width = 0, const u32 max_height = 0);
+    sdl2::Texture RenderText(const std::string &font_name, const std::string &text, const Color clr, const u32 max_width = 0, const u32 max_height = 0, const u32 preserve_tail_len = 0, const std::string& truncation_marker = "...");
 
 }

@@ -27,9 +27,13 @@ namespace pu::ui::elm {
 
             static constexpr Color DefaultColor = { 10, 10, 10, 0xFF };
 
+            static constexpr u32 DefaultPreserveTailLength = 0;
+
         private:
             std::string name;
+            std::string truncation_marker;
             Color clr;
+            u32 preserve_tail_len;
             sdl2::TextureHandle::Ref icon;
             std::vector<OnKeyCallback> on_key_cbs;
             std::vector<u64> on_key_cb_keys;
@@ -39,7 +43,7 @@ namespace pu::ui::elm {
              * @brief Creates a new instance of a MenuItem.
              * @param name Name of the MenuItem.
              */
-            MenuItem(const std::string &name) : name(name), clr(DefaultColor) {}
+            MenuItem(const std::string &name) : name(name), truncation_marker("..."), clr(DefaultColor), preserve_tail_len(DefaultPreserveTailLength) {}
             PU_SMART_CTOR(MenuItem)
 
             /**
@@ -58,7 +62,16 @@ namespace pu::ui::elm {
                 this->name = name;
             }
 
+            inline std::string GetTruncationMarker() {
+                return this->truncation_marker;
+            }
+
+            inline void SetTruncationMarker(const std::string& marker) {
+                this->truncation_marker = marker;
+            }
+
             PU_CLASS_POD_GETSET(Color, clr, Color)
+            PU_CLASS_POD_GETSET(PreserveTailLength, preserve_tail_len, u32)
 
             /**
              * @brief Adds a new OnKeyCallback to the MenuItem.

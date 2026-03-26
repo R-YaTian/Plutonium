@@ -21,7 +21,16 @@ namespace pu::ui::elm {
         const auto item_count = this->GetItemCount();
         for(u32 i = this->advanced_item_count; i < (this->advanced_item_count + item_count); i++) {
             auto &item = this->items.at(i);
-            auto name_tex = render::RenderText(this->font_name, item->GetName(), item->GetColor());
+            s32 max_width = 0;
+            if (item->HasIcon())
+            {
+                max_width = this->w - this->icon_margin - static_cast<s32>(this->items_h * this->icon_item_sizes_factor) - this->text_margin * 2;
+            }
+            else
+            {
+                max_width = this->w - this->text_margin * 2;
+            }
+            auto name_tex = render::RenderText(this->font_name, item->GetName(), item->GetColor(), max_width, 0, item->GetPreserveTailLength(), item->GetTruncationMarker());
             this->loaded_name_texs.push_back(name_tex);
         }
     }

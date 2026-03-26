@@ -364,7 +364,7 @@ namespace pu::ui::render {
         return height;
     }
 
-    sdl2::Texture RenderText(const std::string &font_name, const std::string &text, const Color clr, const u32 max_width, const u32 max_height) {
+    sdl2::Texture RenderText(const std::string &font_name, const std::string &text, const Color clr, const u32 max_width, const u32 max_height, const u32 preserve_tail_len, const std::string& truncation_marker) {
         for(auto &[name, font]: g_FontTable) {
             if(name == font_name) {
                 auto text_tex = font->RenderText(text, clr);
@@ -373,6 +373,10 @@ namespace pu::ui::render {
                     auto cur_text = text;
                     auto cur_width = GetTextureWidth(text_tex);
                     auto cur_height = GetTextureHeight(text_tex);
+                    std::string tail;
+                    if(preserve_tail_len > 0) {
+                        tail = text.substr(text.size() - preserve_tail_len);
+                    }
                     while(true) {
                         if(cur_text.empty()) {
                             break;
@@ -386,7 +390,7 @@ namespace pu::ui::render {
 
                         cur_text.pop_back();
                         DeleteTexture(text_tex);
-                        text_tex = font->RenderText(cur_text + "...", clr);
+                        text_tex = font->RenderText(preserve_tail_len > 0 ? cur_text + truncation_marker + tail : cur_text + truncation_marker, clr);
                         cur_width = GetTextureWidth(text_tex);
                         cur_height = GetTextureHeight(text_tex);
                     }

@@ -1232,7 +1232,7 @@ int TTF_SizeUTF8(TTF_Font *ttf_font, const char *text, int *w, int *h)
             outline_delta = font->outline * 2;
         }
 
-        if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED ) {
+        if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED || c == UNKNOWN_UNICODE) {
             continue;
         }
 
@@ -1414,7 +1414,7 @@ SDL_Surface *TTF_RenderUTF8_Solid(TTF_Font *ttf_font,
     xstart = 0;
     while ( textlen > 0 ) {
         Uint16 c = UTF8_getch(&text, &textlen);
-        if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED ) {
+        if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED || c == UNKNOWN_UNICODE) {
             continue;
         }
 
@@ -1611,7 +1611,7 @@ SDL_Surface *TTF_RenderUTF8_Shaded(TTF_Font *ttf_font,
     xstart = 0;
     while ( textlen > 0 ) {
         Uint16 c = UTF8_getch(&text, &textlen);
-        if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED ) {
+        if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED || c == UNKNOWN_UNICODE) {
             continue;
         }
 
@@ -1794,7 +1794,7 @@ SDL_Surface *TTF_RenderUTF8_Blended(TTF_Font *ttf_font,
     SDL_FillRect(textbuf, NULL, pixel); /* Initialize with fg and 0 alpha */
     while ( textlen > 0 ) {
         Uint16 c = UTF8_getch(&text, &textlen);
-        if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED ) {
+        if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED || c == UNKNOWN_UNICODE) {
             continue;
         }
 
@@ -2078,7 +2078,7 @@ SDL_Surface *TTF_RenderUTF8_Blended_Wrapped(TTF_Font *ttf_font,
         xstart = 0;
         while ( textlen > 0 ) {
             Uint16 c = UTF8_getch(&text, &textlen);
-            if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED ) {
+            if ( c == UNICODE_BOM_NATIVE || c == UNICODE_BOM_SWAPPED || c == UNKNOWN_UNICODE) {
                 continue;
             }
 
