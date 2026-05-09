@@ -7,8 +7,9 @@
  */
 
 #pragma once
-#include <SDL2/SDL_mixer.h>
 #include <pu/pu_Include.hpp> 
+
+struct Mix_Chunk;
 
 namespace pu::audio {
 
@@ -30,8 +31,16 @@ namespace pu::audio {
      * @brief Plays a sound effect.
      * @note pu::audio::Initialize must be called before using this function.
      * @param sfx Sound effect to play. If NULL is passed, nothing will happen.
+     * @return The channel on which the sound effect is being played, or -1 if an error occurred.
      */
-    void PlaySfx(Sfx sfx);
+    int PlaySfx(Sfx sfx);
+
+    /**
+     * @brief Checks if a sound effect is currently playing on the specified channel.
+     * @param channel Channel to check.
+     * @return Whether a sound effect is currently playing on the specified channel.
+     */
+    bool IsPlayingSfx(const int channel);
 
     /**
      * @brief Destroys a sound effect.

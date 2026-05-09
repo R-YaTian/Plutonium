@@ -75,7 +75,7 @@ set_target_properties(pu PROPERTIES
 # SDL libraries
 set(SDL_IMAGE_LIBS SDL2_image png jpeg)
 set(SDL_GFX_LIBS SDL2_gfx)
-set(SDL_MIXER_LIBS SDL2_mixer modplug mpg123 vorbisidec ogg)
+set(SDL_MIXER_LIBS SDL2_mixer)
 
 # Link libraries
 target_link_libraries(pu PUBLIC

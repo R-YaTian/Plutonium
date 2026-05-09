@@ -1,3 +1,4 @@
+#include <SDL2/SDL_mixer.h>
 #include <pu/audio/audio_Sfx.hpp>
 
 namespace pu::audio {
@@ -6,8 +7,12 @@ namespace pu::audio {
         return Mix_LoadWAV(path.c_str());
     }
 
-    void PlaySfx(Sfx sfx) {
-        Mix_PlayChannel(-1, sfx, 0);
+    int PlaySfx(Sfx sfx) {
+        return Mix_PlayChannel(-1, sfx, 0);
+    }
+
+    bool IsPlayingSfx(const int channel) {
+        return (Mix_Playing(channel) != 0);
     }
 
     void DestroySfx(Sfx &sfx) {

@@ -1,3 +1,4 @@
+#include <SDL2/SDL_mixer.h>
 #include <pu/audio/audio_Audio.hpp>
 
 namespace pu::audio {
