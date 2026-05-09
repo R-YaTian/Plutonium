@@ -29,6 +29,14 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(FREETYPE REQUIRED freetype2)
 
+# Build custom SDL2_mixer before compiling main library
+add_custom_target(build_sdl2_mixer ALL
+	COMMAND makepkg --verifysource
+	COMMAND makepkg -efC --noconfirm --noarchive
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../SDL2_mixer
+	COMMENT "Building custom SDL2_mixer library"
+)
+
 # Source directories
 set(SOURCE_DIRS
     source
@@ -55,6 +63,9 @@ endforeach()
 # Create static library
 add_library(pu STATIC ${SOURCES})
 
+# Ensure SDL2_mixer is built before compiling pu
+add_dependencies(pu build_sdl2_mixer)
+
 # Set target properties
 set_target_properties(pu PROPERTIES
     OUTPUT_NAME "pu"
@@ -80,6 +91,13 @@ target_link_libraries(pu PUBLIC
 
 # Create output directory
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+
+# Merge libraries using ar script
+add_custom_command(
+	TARGET pu POST_BUILD
+	COMMAND ar -M < ${CMAKE_CURRENT_SOURCE_DIR}/merge.mri
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 # Install the library
 install(

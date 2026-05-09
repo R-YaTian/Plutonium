@@ -13,16 +13,11 @@
 namespace pu::audio {
 
     /**
-     * @brief Complete set of flags to initialize the audio system with: supports FLAC, MOD, MP3 and OGG formats.
-     */
-    constexpr s32 MixerAllFlags = MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MP3 | MIX_INIT_OGG;
-
-    /**
      * @brief Initializes the underlying audio system (SDL2-Mixer) with the specified flags.
-     * @param mix_flags Flags to initialize the audio system with.
+     * @param init_midi Whether to initialize the MIDI audio system.
      * @return Whether the audio system was initialized successfully.
      */
-    bool Initialize(s32 mix_flags);
+    bool Initialize(bool init_midi = false);
 
     /**
      * @brief Finalizes the underlying audio system (SDL2-Mixer).

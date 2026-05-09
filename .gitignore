@@ -4,3 +4,7 @@ lib/
 *.elf
 *.nacp
 *.nro
+*.a
+SDL2_mixer/src
+SDL2_mixer/pkg
+*.tar.*

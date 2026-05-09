@@ -1,0 +1,5 @@
+CREATE lib/libpu.a
+ADDLIB lib/libpu.a
+ADDLIB ../SDL2_mixer/libSDL2_mixer.a
+SAVE
+END
