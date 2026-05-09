@@ -31,9 +31,8 @@ pkg_check_modules(FREETYPE REQUIRED freetype2)
 
 # Build custom SDL2_mixer before compiling main library
 add_custom_target(build_sdl2_mixer ALL
-	COMMAND makepkg --verifysource
-	COMMAND makepkg -efC --noconfirm --noarchive
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../SDL2_mixer
+	COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build-sdl2-mixer.sh
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	COMMENT "Building custom SDL2_mixer library"
 )
 
@@ -106,6 +105,6 @@ install(
 )
 
 # Install headers
-install(DIRECTORY include/
+install(DIRECTORY include/pu
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
