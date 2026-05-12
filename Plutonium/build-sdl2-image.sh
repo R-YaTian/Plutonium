@@ -1,22 +1,19 @@
 #!/bin/bash
 
-# SDL2_mixer Build Script for GNU/Linux
+# SDL2_image Build Script for GNU/Linux
 # Converted from PKGBUILD
 
 set -e  # Exit immediately on error
 
 # Configuration parameters
 PKGVER="2.6.3"
-URL="https://libsdl.org/projects/SDL_mixer/"
-PKG_NAME="SDL2_mixer-${PKGVER}"
+URL="https://libsdl.org/projects/SDL_image/"
+PKG_NAME="SDL2_image-${PKGVER}"
 TARBALL="${PKG_NAME}.tar.gz"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 INSTALL_PREFIX="${INSTALL_PREFIX:-${SCRIPT_DIR}}"
 
-# Target platform - Nintendo Switch
-TARGET_HOST="aarch64-none-elf"
-
-echo "===== SDL2_mixer Build Script ====="
+echo "===== SDL2_image Build Script ====="
 echo "Version: ${PKGVER}"
 echo "Install prefix: ${INSTALL_PREFIX}"
 echo ""
@@ -47,40 +44,26 @@ if [ -n "$DEVKITPRO" ]; then
     source ${DEVKITPRO}/switchvars.sh
 fi
 
-# Patch Makefile.in - skip building playwave and playmus
-echo "Patching Makefile.in..."
-sed -i 's|\$(objects)/play.*mus\$(EXE)||' Makefile.in
+patch -Np1 -i ${SCRIPT_DIR}/sdl2_image.patch Makefile.in
 
 # Configure build parameters
 echo "Running configure..."
-echo "Target platform: $TARGET_HOST"
-LIBS="-lm" ./configure \
-    --host="${TARGET_HOST}" \
-    --prefix="${INSTALL_PREFIX}" \
-    --disable-shared \
-    --enable-static \
-    --disable-music-cmd \
-    --disable-music-ogg \
-    --disable-music-flac \
-    --disable-music-mod \
-    --disable-music-opus \
-    --enable-music-mp3-mpg123 \
-    --enable-music-midi-native \
-    --disable-music-midi-timidity \
-    --disable-music-mp3-drmp3
+./configure --prefix="${INSTALL_PREFIX}" \
+    --host=aarch64-none-elf --disable-shared --enable-static \
+    --disable-sdltest \
+    --disable-avif \
+    --disable-tif \
+    --disable-jxl
 
-# Build
 echo "Building..."
-make -j$(nproc)
+make check -j$(nproc)
 
 # Install
-echo "Installing..."
 make install
 
 echo ""
 echo "===== Build Complete ====="
 echo "Installed to: ${INSTALL_PREFIX}"
-echo "Library file: ${INSTALL_PREFIX}/lib/libSDL2_mixer.a"
 
 # Clean up temporary directory
 rm -rf "$WORK_DIR"

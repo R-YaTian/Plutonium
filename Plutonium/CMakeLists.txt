@@ -36,6 +36,12 @@ add_custom_target(build_sdl2_mixer ALL
 	COMMENT "Building custom SDL2_mixer library"
 )
 
+add_custom_target(build_sdl2_image ALL
+	COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build-sdl2-image.sh
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMENT "Building SDL2_image library"
+)
+
 # Source directories
 set(SOURCE_DIRS
     source
@@ -63,7 +69,7 @@ endforeach()
 add_library(pu STATIC ${SOURCES})
 
 # Ensure SDL2_mixer is built before compiling pu
-add_dependencies(pu build_sdl2_mixer)
+add_dependencies(pu build_sdl2_mixer build_sdl2_image)
 
 # Set target properties
 set_target_properties(pu PROPERTIES
@@ -72,9 +78,9 @@ set_target_properties(pu PROPERTIES
 )
 
 # SDL libraries
-set(SDL_IMAGE_LIBS SDL2_image png jpeg)
+set(SDL_IMAGE_LIBS SDL2_image webp)
 set(SDL_GFX_LIBS SDL2_gfx)
-set(SDL_MIXER_LIBS SDL2_mixer)
+set(SDL_MIXER_LIBS SDL2_mixer mpg123)
 
 # Link libraries
 target_link_libraries(pu PUBLIC

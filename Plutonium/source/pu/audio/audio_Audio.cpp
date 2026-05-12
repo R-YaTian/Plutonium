@@ -3,8 +3,8 @@
 
 namespace pu::audio {
 
-    bool Initialize(bool init_midi) {
-        if(init_midi && Mix_Init(MIX_INIT_MID) != MIX_INIT_MID) {
+    bool Initialize(int init_flags) {
+        if(init_flags != 0 && Mix_Init(init_flags) != init_flags) {
             return false;
         }
 

@@ -35,9 +35,9 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=${DEVKITPRO}/libnx/switch.specs -g $(ARCH) -Wl,-r,-Map,$(notdir $*.map)
 
-SDL_IMAGE_LIBS	:= -lSDL2_image -lpng -ljpeg -lwebp
+SDL_IMAGE_LIBS	:= -lSDL2_image -lwebp
 SDL_GFX_LIBS	:= -lSDL2_gfx
-SDL_MIXER_LIBS	:= -lSDL2_mixer
+SDL_MIXER_LIBS	:= -lSDL2_mixer -lmpg123
 
 LIBS	:=  $(SDL_IMAGE_LIBS) $(SDL_GFX_LIBS) $(SDL_MIXER_LIBS) -lEGL -lGLESv2 -lglapi -lfreetype `$(PREFIX)pkg-config --cflags freetype2` -lharfbuzz
 

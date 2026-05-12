@@ -1,3 +1,4 @@
+#include <SDL2/SDL_image.h>
 #include <pu/ui/render/render_SDL2.hpp>
 #include <pu/ui/render/render_Renderer.hpp>
 

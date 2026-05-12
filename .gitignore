@@ -7,3 +7,4 @@ lib/
 *.a
 *.tar.*
 SDL_mixer.h
+SDL_image.h

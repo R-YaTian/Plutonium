@@ -153,7 +153,14 @@ namespace pu::ui::render {
         }
     };
 
-    constexpr u32 ImgAllFlags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_WEBP; // IMG_INIT_TIF not included since they are not supported here
+    typedef enum
+    {
+        SDL_IMG_INIT_JPG    = 0x00000001,
+        SDL_IMG_INIT_PNG    = 0x00000002,
+        SDL_IMG_INIT_WEBP   = 0x00000008,
+    } SDL_IMG_InitFlags;
+
+    constexpr u32 ImgAllFlags = SDL_IMG_INIT_PNG | SDL_IMG_INIT_JPG | SDL_IMG_INIT_WEBP;
     constexpr u32 RendererSoftwareFlags = SDL_RENDERER_SOFTWARE;
     constexpr u32 RendererHardwareFlags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
 
