@@ -60,14 +60,9 @@ LIBS="-lm" ./configure \
     --disable-shared \
     --enable-static \
     --disable-music-cmd \
-    --disable-music-ogg \
-    --disable-music-flac \
     --disable-music-mod \
     --disable-music-opus \
-    --enable-music-mp3-mpg123 \
-    --enable-music-midi-native \
-    --disable-music-midi-timidity \
-    --disable-music-mp3-drmp3
+    --disable-music-midi
 
 # Build
 echo "Building..."

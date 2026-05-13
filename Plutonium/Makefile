@@ -37,7 +37,7 @@ LDFLAGS	=	-specs=${DEVKITPRO}/libnx/switch.specs -g $(ARCH) -Wl,-r,-Map,$(notdir
 
 SDL_IMAGE_LIBS	:= -lSDL2_image -lwebp
 SDL_GFX_LIBS	:= -lSDL2_gfx
-SDL_MIXER_LIBS	:= -lSDL2_mixer -lmpg123
+SDL_MIXER_LIBS	:= -lSDL2_mixer
 
 LIBS	:=  $(SDL_IMAGE_LIBS) $(SDL_GFX_LIBS) $(SDL_MIXER_LIBS) -lEGL -lGLESv2 -lglapi -lfreetype `$(PREFIX)pkg-config --cflags freetype2` -lharfbuzz
 

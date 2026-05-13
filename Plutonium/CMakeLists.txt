@@ -80,7 +80,7 @@ set_target_properties(pu PROPERTIES
 # SDL libraries
 set(SDL_IMAGE_LIBS SDL2_image webp)
 set(SDL_GFX_LIBS SDL2_gfx)
-set(SDL_MIXER_LIBS SDL2_mixer mpg123)
+set(SDL_MIXER_LIBS SDL2_mixer)
 
 # Link libraries
 target_link_libraries(pu PUBLIC

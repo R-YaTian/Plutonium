@@ -10,8 +10,8 @@ namespace pu::audio {
 
         if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) == -1) {
             return false;
-        }   
-    
+        }
+
         return true;
     }
 

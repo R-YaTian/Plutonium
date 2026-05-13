@@ -16,7 +16,7 @@ namespace pu::audio {
     }
 
     bool IsPlayingMusic() {
-        return Mix_PlayingMusic();
+        return (Mix_PlayingMusic() != 0);
     }
 
     void PauseMusic() {

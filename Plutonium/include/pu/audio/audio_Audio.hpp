@@ -14,9 +14,10 @@ namespace pu::audio {
 
     typedef enum
     {
+        INIT_FLAC   = 0x00000001,
         INIT_MP3    = 0x00000008,
-        INIT_MID    = 0x00000020,
-        INIT_ALL    = (INIT_MP3 | INIT_MID),
+        INIT_OGG    = 0x00000010,
+        INIT_ALL    = (INIT_FLAC | INIT_MP3 | INIT_OGG),
     } InitFlags;
 
     /**
