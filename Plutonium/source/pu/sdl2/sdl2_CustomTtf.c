@@ -1,6 +1,6 @@
 /*
   SDL_ttf:  A companion library to SDL for working with TrueType (tm) fonts
-  Copyright (C) 2001-2013 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 2001-2016 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -103,7 +103,8 @@ struct _TTF_Font {
     /* really just flags passed into FT_Load_Glyph */
     int hinting;
 
-    /* custom - pointer to the C++ class with the font maps, etc... */
+    /* custom */
+    /* pointer to the C++ class with the font maps, etc... */
     void *cpp_font_ref_ptr;
 };
 
@@ -232,7 +233,7 @@ static void TTF_drawLine_Solid(const TTF_Font *font, const SDL_Surface *textbuf,
     /* Draw line */
     for ( line=height; line>0 && dst < dst_check; --line ) {
         /* 1 because 0 is the bg color */
-        memset( dst, 1, textbuf->w );
+        SDL_memset( dst, 1, textbuf->w );
         dst += textbuf->pitch;
     }
 }
@@ -252,7 +253,7 @@ static void TTF_drawLine_Shaded(const TTF_Font *font, const SDL_Surface *textbuf
 
     /* Draw line */
     for ( line=height; line>0 && dst < dst_check; --line ) {
-        memset( dst, NUM_GRAYS - 1, textbuf->w );
+        SDL_memset( dst, NUM_GRAYS - 1, textbuf->w );
         dst += textbuf->pitch;
     }
 }
@@ -326,10 +327,9 @@ static void TTF_SetFTError(const char *msg, FT_Error error)
     if ( ! err_msg ) {
         err_msg = "unknown FreeType error";
     }
-    sprintf(buffer, "%s: %s", msg, err_msg);
-    TTF_SetError(buffer);
+    TTF_SetError("%s: %s", msg, err_msg);
 #else
-    TTF_SetError(msg);
+    TTF_SetError("%s", msg);
 #endif /* USE_FREETYPE_ERRORS */
 }
 
@@ -401,7 +401,7 @@ TTF_Font* TTF_OpenFontIndexRW( SDL_RWops *src, int freesrc, int ptsize, long ind
         return NULL;
     }
 
-    font = (TTF_Font*) malloc(sizeof *font);
+    font = (TTF_Font*)SDL_malloc(sizeof *font);
     if ( font == NULL ) {
         TTF_SetError( "Out of memory" );
         if ( freesrc ) {
@@ -409,18 +409,18 @@ TTF_Font* TTF_OpenFontIndexRW( SDL_RWops *src, int freesrc, int ptsize, long ind
         }
         return NULL;
     }
-    memset(font, 0, sizeof(*font));
+    SDL_memset(font, 0, sizeof(*font));
 
     font->src = src;
     font->freesrc = freesrc;
 
-    stream = (FT_Stream)malloc(sizeof(*stream));
+    stream = (FT_Stream)SDL_malloc(sizeof(*stream));
     if ( stream == NULL ) {
         TTF_SetError( "Out of memory" );
         TTF_CloseFont( font );
         return NULL;
     }
-    memset(stream, 0, sizeof(*stream));
+    SDL_memset(stream, 0, sizeof(*stream));
 
     stream->read = RWread;
     stream->descriptor.pointer = src;
@@ -566,11 +566,11 @@ static void Flush_Glyph( c_glyph* glyph )
     glyph->stored = 0;
     glyph->index = 0;
     if ( glyph->bitmap.buffer ) {
-        free( glyph->bitmap.buffer );
+        SDL_free( glyph->bitmap.buffer );
         glyph->bitmap.buffer = 0;
     }
     if ( glyph->pixmap.buffer ) {
-        free( glyph->pixmap.buffer );
+        SDL_free( glyph->pixmap.buffer );
         glyph->pixmap.buffer = 0;
     }
     glyph->cached = 0;
@@ -647,7 +647,7 @@ static FT_Error Load_Glyph( TTF_Font* font, Uint16 ch, c_glyph* cached, int want
             cached->maxx += font->glyph_overhang;
         }
         if ( TTF_HANDLE_STYLE_ITALIC(font) ) {
-            cached->maxx += (int)ceil(font->glyph_italics);
+            cached->maxx += (int)SDL_ceil(font->glyph_italics);
         }
         cached->stored |= CACHED_METRICS;
     }
@@ -704,7 +704,7 @@ static FT_Error Load_Glyph( TTF_Font* font, Uint16 ch, c_glyph* cached, int want
         } else {
             dst = &cached->pixmap;
         }
-        memcpy( dst, src, sizeof( *dst ) );
+        SDL_memcpy( dst, src, sizeof( *dst ) );
 
         /* FT_Render_Glyph() and .fon fonts always generate a
          * two-color (black and white) glyphslot surface, even
@@ -731,17 +731,17 @@ static FT_Error Load_Glyph( TTF_Font* font, Uint16 ch, c_glyph* cached, int want
             dst->width += bump;
         }
         if ( TTF_HANDLE_STYLE_ITALIC(font) ) {
-            int bump = (int)ceil(font->glyph_italics);
+            int bump = (int)SDL_ceil(font->glyph_italics);
             dst->pitch += bump;
             dst->width += bump;
         }
 
         if (dst->rows != 0) {
-            dst->buffer = (unsigned char *)malloc( dst->pitch * dst->rows );
+            dst->buffer = (unsigned char *)SDL_malloc( dst->pitch * dst->rows );
             if ( !dst->buffer ) {
                 return FT_Err_Out_Of_Memory;
             }
-            memset( dst->buffer, 0, dst->pitch * dst->rows );
+            SDL_memset( dst->buffer, 0, dst->pitch * dst->rows );
 
             for ( i = 0; i < src->rows; i++ ) {
                 int soffset = i * src->pitch;
@@ -851,7 +851,7 @@ static FT_Error Load_Glyph( TTF_Font* font, Uint16 ch, c_glyph* cached, int want
                         }
                     }
                 } else {
-                    memcpy(dst->buffer+doffset,
+                    SDL_memcpy(dst->buffer+doffset,
                            src->buffer+soffset, src->pitch);
                 }
             }
@@ -1362,7 +1362,7 @@ SDL_Surface *TTF_RenderUTF8_Solid(TTF_Font *ttf_font,
     int xstart;
     int width;
     int height;
-    int max_ascent = ttf_font->ascent;  /* Track maximum ascent during rendering */
+    int primary_ascent = ttf_font->ascent;  /* Get primary ascent from first font */
     SDL_Surface* textbuf;
     SDL_Palette* palette;
     Uint8* src;
@@ -1418,12 +1418,8 @@ SDL_Surface *TTF_RenderUTF8_Solid(TTF_Font *ttf_font,
             continue;
         }
 
+        /* custom */
         font = TTF_CppWrap_FindValidFont(orig_font, c);
-
-        /* Update maximum ascent during rendering for baseline alignment */
-        if (font->ascent > max_ascent) {
-            max_ascent = font->ascent;
-        }
 
         /* check kerning */
         use_kerning = FT_HAS_KERNING( font->face ) && font->kerning;
@@ -1457,8 +1453,9 @@ SDL_Surface *TTF_RenderUTF8_Solid(TTF_Font *ttf_font,
         for ( row = 0; row < current->rows; ++row ) {
             /* Make sure we don't go either over, or under the
              * limit */
-            /* Adjust y position using the maximum ascent for proper baseline alignment */
-            int adjusted_yoffset = max_ascent - font->ascent + glyph->yoffset;
+            /* custom */
+            /* Adjust y position using the primary ascent for proper baseline alignment */
+            int adjusted_yoffset = (primary_ascent - font->ascent) + glyph->yoffset;
             if ( row+adjusted_yoffset < 0 ) {
                 continue;
             }
@@ -1552,7 +1549,7 @@ SDL_Surface *TTF_RenderUTF8_Shaded(TTF_Font *ttf_font,
     int xstart;
     int width;
     int height;
-    int max_ascent = ttf_font->ascent;  /* Track maximum ascent during rendering */
+    int primary_ascent = ttf_font->ascent;  /* Get primary ascent from first font */
     SDL_Surface* textbuf;
     SDL_Palette* palette;
     int index;
@@ -1600,14 +1597,12 @@ SDL_Surface *TTF_RenderUTF8_Shaded(TTF_Font *ttf_font,
         palette->colors[index].b = bg.b + (index*bdiff) / (NUM_GRAYS-1);
     }
 
-    
-
     TTF_Font *orig_font = ttf_font;
     TTF_Font *font = orig_font;
 
     /* Load and render each character */
     textlen = SDL_strlen(text);
-    first = SDL_FALSE;
+    first = SDL_TRUE;
     xstart = 0;
     while ( textlen > 0 ) {
         Uint16 c = UTF8_getch(&text, &textlen);
@@ -1615,12 +1610,8 @@ SDL_Surface *TTF_RenderUTF8_Shaded(TTF_Font *ttf_font,
             continue;
         }
 
+        /* custom */
         font = TTF_CppWrap_FindValidFont(orig_font, c);
-
-        /* Update maximum ascent during rendering for baseline alignment */
-        if (font->ascent > max_ascent) {
-            max_ascent = font->ascent;
-        }
 
         /* check kerning */
         use_kerning = FT_HAS_KERNING( font->face ) && font->kerning;
@@ -1654,8 +1645,9 @@ SDL_Surface *TTF_RenderUTF8_Shaded(TTF_Font *ttf_font,
         for ( row = 0; row < current->rows; ++row ) {
             /* Make sure we don't go either over, or under the
              * limit */
-            /* Adjust y position using the maximum ascent for proper baseline alignment */
-            int adjusted_yoffset = max_ascent - font->ascent + glyph->yoffset;
+            /* custom */
+            /* Adjust y position using the primary ascent for proper baseline alignment */
+            int adjusted_yoffset = (primary_ascent - font->ascent) + glyph->yoffset;
             if ( row+adjusted_yoffset < 0 ) {
                 continue;
             }
@@ -1750,7 +1742,7 @@ SDL_Surface *TTF_RenderUTF8_Blended(TTF_Font *ttf_font,
     SDL_bool first;
     int xstart;
     int width, height;
-    int max_ascent = ttf_font->ascent;  /* Track maximum ascent during rendering */
+    int primary_ascent = ttf_font->ascent;  /* Get primary ascent from first font */
     SDL_Surface *textbuf;
     Uint32 alpha;
     Uint32 pixel;
@@ -1784,7 +1776,7 @@ SDL_Surface *TTF_RenderUTF8_Blended(TTF_Font *ttf_font,
     dst_check = (Uint32*)textbuf->pixels + textbuf->pitch/4 * textbuf->h;
 
     TTF_Font *orig_font = ttf_font;
-    TTF_Font *font = font;
+    TTF_Font *font = orig_font;
 
     /* Load and render each character */
     textlen = SDL_strlen(text);
@@ -1798,12 +1790,8 @@ SDL_Surface *TTF_RenderUTF8_Blended(TTF_Font *ttf_font,
             continue;
         }
 
+        /* custom */
         font = TTF_CppWrap_FindValidFont(orig_font, c);
-
-        /* Update maximum ascent during rendering for baseline alignment */
-        if (font->ascent > max_ascent) {
-            max_ascent = font->ascent;
-        }
 
         /* check kerning */
         use_kerning = FT_HAS_KERNING( font->face ) && font->kerning;
@@ -1837,8 +1825,9 @@ SDL_Surface *TTF_RenderUTF8_Blended(TTF_Font *ttf_font,
         for ( row = 0; row < glyph->pixmap.rows; ++row ) {
             /* Make sure we don't go either over, or under the
              * limit */
-            /* Adjust y position using the maximum ascent for proper baseline alignment */
-            int adjusted_yoffset = max_ascent - font->ascent + glyph->yoffset;
+            /* custom */
+            /* Adjust y position using the primary ascent for proper baseline alignment */
+            int adjusted_yoffset = (primary_ascent - font->ascent) + glyph->yoffset;
             if ( row+adjusted_yoffset < 0 ) {
                 continue;
             }
@@ -1935,7 +1924,7 @@ SDL_Surface *TTF_RenderUTF8_Blended_Wrapped(TTF_Font *ttf_font,
     SDL_bool first;
     int xstart;
     int width, height;
-    int max_ascent = ttf_font->ascent;  /* Track maximum ascent during rendering */
+    int primary_ascent = ttf_font->ascent;  /* Get primary ascent from first font */
     SDL_Surface *textbuf;
     Uint32 alpha;
     Uint32 pixel;
@@ -2021,6 +2010,7 @@ SDL_Surface *TTF_RenderUTF8_Blended_Wrapped(TTF_Font *ttf_font,
                 delim = *spot;
                 *spot = '\0';
 
+                /* custom */
                 TTF_SizeUTF8(ttf_font, tok, &w, &h);
                 if ((Uint32)w <= wrapLength) {
                     if (w > max_width)
@@ -2082,12 +2072,8 @@ SDL_Surface *TTF_RenderUTF8_Blended_Wrapped(TTF_Font *ttf_font,
                 continue;
             }
 
+            /* custom */
             font = TTF_CppWrap_FindValidFont(orig_font, c);
-            
-            /* Update maximum ascent during rendering for baseline alignment */
-            if (font->ascent > max_ascent) {
-                max_ascent = font->ascent;
-            }
 
             /* check kerning */
             use_kerning = FT_HAS_KERNING( font->face ) && font->kerning;
@@ -2121,8 +2107,9 @@ SDL_Surface *TTF_RenderUTF8_Blended_Wrapped(TTF_Font *ttf_font,
             for ( row = 0; row < glyph->pixmap.rows; ++row ) {
                 /* Make sure we don't go either over, or under the
                  * limit */
-                /* Adjust y position using the maximum ascent for proper baseline alignment */
-                int adjusted_yoffset = max_ascent - font->ascent + glyph->yoffset;
+                /* custom */
+                /* Adjust y position using the primary ascent for proper baseline alignment */
+                int adjusted_yoffset = (primary_ascent - font->ascent) + glyph->yoffset;
                 if ( row+adjusted_yoffset < 0 ) {
                     continue;
                 }
@@ -2268,6 +2255,7 @@ int TTF_WasInit( void )
     return TTF_initialized;
 }
 
+/* don't use this function. It's just here for binary compatibility. */
 int TTF_GetFontKerningSize(TTF_Font* font, int prev_index, int index)
 {
     FT_Vector delta;
@@ -2275,6 +2263,43 @@ int TTF_GetFontKerningSize(TTF_Font* font, int prev_index, int index)
     return (delta.x >> 6);
 }
 
+int TTF_GetFontKerningSizeGlyphs(TTF_Font *font, Uint16 previous_ch, Uint16 ch)
+{
+    int error;
+    int glyph_index, prev_index;
+    FT_Vector delta;
+
+    if (ch == UNICODE_BOM_NATIVE || ch == UNICODE_BOM_SWAPPED) {
+        return 0;
+    }
+
+    if (previous_ch == UNICODE_BOM_NATIVE || previous_ch == UNICODE_BOM_SWAPPED) {
+        return 0;
+    }
+
+    error = Find_Glyph(font, ch, CACHED_METRICS);
+    if (error) {
+        TTF_SetFTError("Couldn't find glyph", error);
+        return -1;
+    }
+    glyph_index = font->current->index;
+
+    error = Find_Glyph(font, previous_ch, CACHED_METRICS);
+    if (error) {
+        TTF_SetFTError("Couldn't find glyph", error);
+        return -1;
+    }
+    prev_index = font->current->index;
+
+    error = FT_Get_Kerning(font->face, prev_index, glyph_index, ft_kerning_default, &delta);
+    if (error) {
+        TTF_SetFTError("Couldn't get glyph kerning", error);
+        return -1;
+    }
+    return (delta.x >> 6);
+}
+
+/* custom */
 void *TTF_CppWrap_GetCppPtrRef(TTF_Font *font)
 {
     return font->cpp_font_ref_ptr;

@@ -76,11 +76,11 @@ namespace pu::ui::render {
                 #define _CREATE_DEFAULT_FONT_FOR_SIZES(sizes) { \
                     for(const auto size: sizes) { \
                         auto default_font = std::make_shared<ttf::Font>(size); \
-                        for(const auto &path: this->init_opts.default_font_paths) { \
-                            default_font->LoadFromFile(path); \
-                        } \
                         for(const auto type: this->init_opts.default_shared_fonts) { \
                             LoadSingleSharedFontInFont(default_font, type); \
+                        } \
+                        for(const auto &path: this->init_opts.default_font_paths) { \
+                            default_font->LoadFromFile(path); \
                         } \
                         AddDefaultFont(default_font); \
                     } \
