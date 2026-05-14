@@ -78,7 +78,7 @@ set_target_properties(pu PROPERTIES
 )
 
 # SDL libraries
-set(SDL_IMAGE_LIBS SDL2_image webp)
+set(SDL_IMAGE_LIBS SDL2_image webp webpdemux)
 set(SDL_GFX_LIBS SDL2_gfx)
 set(SDL_MIXER_LIBS SDL2_mixer)
 

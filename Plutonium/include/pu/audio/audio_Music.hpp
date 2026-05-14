@@ -9,14 +9,14 @@
 #pragma once
 #include <pu/pu_Include.hpp>
 
-struct _Mix_Music;
+struct Mix_Music;
 
 namespace pu::audio {
 
     /**
      * @brief Type representing a music file.
      */
-    using Music = struct _Mix_Music*;
+    using Music = struct Mix_Music*;
 
     /**
      * @brief Opens a music file from the specified path.

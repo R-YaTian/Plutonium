@@ -33,7 +33,7 @@ This is how a regular Plutonium project would (more or less) have its Makefile a
 ```Makefile
 ...
 
-LIBS := -lpu -lfreetype -lSDL2_gfx -lSDL2 -lEGL -lGLESv2 -lglapi -ldrm_nouveau -lwebp `sdl2-config --libs` `$(PREFIX)pkg-config --libs freetype2` -lnx
+LIBS := -lpu -lfreetype -lSDL2_gfx -lSDL2 -lEGL -lGLESv2 -lglapi -ldrm_nouveau -lwebp -lwebpdemux `sdl2-config --libs` `$(PREFIX)pkg-config --libs freetype2` -lnx
 LIBDIRS := $(PORTLIBS) $(LIBNX) $(CURDIR)/Plutonium
 
 ...

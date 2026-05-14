@@ -6,7 +6,7 @@
 set -e  # Exit immediately on error
 
 # Configuration parameters
-PKGVER="2.6.3"
+PKGVER="2.8.2"
 URL="https://libsdl.org/projects/SDL_mixer/"
 PKG_NAME="SDL2_mixer-${PKGVER}"
 TARBALL="${PKG_NAME}.tar.gz"
@@ -62,7 +62,9 @@ LIBS="-lm" ./configure \
     --disable-music-cmd \
     --disable-music-mod \
     --disable-music-opus \
-    --disable-music-midi
+    --disable-music-midi \
+    --disable-music-wavpack \
+    --disable-music-gme
 
 # Build
 echo "Building..."

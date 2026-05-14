@@ -6,7 +6,7 @@
 set -e  # Exit immediately on error
 
 # Configuration parameters
-PKGVER="2.6.3"
+PKGVER="2.8.12"
 URL="https://libsdl.org/projects/SDL_image/"
 PKG_NAME="SDL2_image-${PKGVER}"
 TARBALL="${PKG_NAME}.tar.gz"
@@ -44,7 +44,16 @@ if [ -n "$DEVKITPRO" ]; then
     source ${DEVKITPRO}/switchvars.sh
 fi
 
-patch -Np1 -i ${SCRIPT_DIR}/sdl2_image.patch Makefile.in
+FILE="${1:-Makefile.in}"
+sed -i \
+    -e '/^noinst_PROGRAMS = showimage\$(EXEEXT) showanim\$(EXEEXT)$/d' \
+    -e '/^showanim_SOURCES = .*showanim\.c$/d' \
+    -e '/^showanim_LDADD = libSDL2_image\.la$/d' \
+    -e '/^showimage_SOURCES = .*showimage\.c$/d' \
+    -e '/^showimage_LDADD = libSDL2_image\.la$/d' \
+    -e '/^showanim\$(EXEEXT):/,/^$/d' \
+    -e '/^showimage\$(EXEEXT):/,/^$/d' \
+    "$FILE"
 
 # Configure build parameters
 echo "Running configure..."
@@ -53,7 +62,8 @@ echo "Running configure..."
     --disable-sdltest \
     --disable-avif \
     --disable-tif \
-    --disable-jxl
+    --disable-jxl \
+    --disable-imageio
 
 echo "Building..."
 make check -j$(nproc)
