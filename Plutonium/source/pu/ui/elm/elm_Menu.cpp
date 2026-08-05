@@ -240,6 +240,13 @@ namespace pu::ui::elm {
             return;
         }
 
+        const auto down_held = (keys_held & (HidNpadButton_Down | HidNpadButton_StickLDown | HidNpadButton_StickRDown)) != 0;
+        const auto up_held = (keys_held & (HidNpadButton_Up | HidNpadButton_StickLUp | HidNpadButton_StickRUp)) != 0;
+        if(((this->move_status == MoveStatus::WaitingDown) && !down_held) ||
+           ((this->move_status == MoveStatus::WaitingUp) && !up_held)) {
+            this->move_status = MoveStatus::None;
+        }
+
         if((this->move_status == MoveStatus::WaitingUp) || (this->move_status == MoveStatus::WaitingDown)) {
             const auto cur_time = std::chrono::steady_clock::now();
             const auto time_diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>(cur_time - this->move_start_time).count();
@@ -288,19 +295,19 @@ namespace pu::ui::elm {
             }
         }
         else {
-            if(keys_down & HidNpadButton_Down) {
+            if(keys_down & HidNpadButton_Down || keys_down & HidNpadButton_StickLDown || keys_down & HidNpadButton_StickRDown) {
                 this->MoveDown();
             }
-            else if((keys_held & HidNpadButton_StickLDown) || (keys_held & HidNpadButton_StickRDown)) {
+            else if((keys_held & HidNpadButton_StickLDown) || (keys_held & HidNpadButton_StickRDown) || (keys_held & HidNpadButton_Down)) {
                 if(this->move_status == MoveStatus::None) {
                     this->move_start_time = std::chrono::steady_clock::now();
                     this->move_status = MoveStatus::WaitingDown;
                 }
             }
-            else if(keys_down & HidNpadButton_Up) {
+            else if(keys_down & HidNpadButton_Up || keys_down & HidNpadButton_StickLUp || keys_down & HidNpadButton_StickRUp) {
                 this->MoveUp();
             }
-            else if((keys_held & HidNpadButton_StickLUp) || (keys_held & HidNpadButton_StickRUp)) {
+            else if((keys_held & HidNpadButton_StickLUp) || (keys_held & HidNpadButton_StickRUp) || (keys_held & HidNpadButton_Up)) {
                 if(this->move_status == MoveStatus::None) {
                     this->move_start_time = std::chrono::steady_clock::now();
                     this->move_status = MoveStatus::WaitingUp;
