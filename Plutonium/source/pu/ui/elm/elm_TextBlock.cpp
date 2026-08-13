@@ -7,7 +7,7 @@ namespace pu::ui::elm {
         this->y = y;
         this->clr = DefaultColor;
         this->text_tex = nullptr;
-        this->fnt_name = GetDefaultFont(DefaultFontSize::MediumLarge);
+        this->fnt_name = GetDefaultFont(DefaultFontSize::Large);
         this->clamp_w = NoClamp;
         this->clamp_speed = DefaultClampSpeedSteps;
         this->clamp_delay = DefaultClampStaticDelaySteps;

@@ -17,7 +17,6 @@ namespace pu::ui {
     enum class DefaultFontSize : u32 {
         Small,
         Medium,
-        MediumLarge,
         Large,
 
         Count
@@ -26,7 +25,7 @@ namespace pu::ui {
     /**
      * @brief Array containing the default font size values used by Plutonium components, for all DefaultFontSize values.
      */
-    constexpr u32 DefaultFontSizes[static_cast<u32>(DefaultFontSize::Count)] = { 27, 30, 37, 45 };
+    constexpr u32 DefaultFontSizes[static_cast<u32>(DefaultFontSize::Count)] = { 27, 30, 37 };
 
     /**
      * @brief Makes a default font name with the specified font size.

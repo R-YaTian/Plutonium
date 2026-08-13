@@ -28,7 +28,7 @@ namespace pu::ui::elm {
 
             static constexpr u8 DefaultHoverAlphaIncrementSteps = 48;
 
-            static constexpr DefaultFontSize DefaultContentFontSize = DefaultFontSize::MediumLarge;
+            static constexpr DefaultFontSize DefaultContentFontSize = DefaultFontSize::Large;
 
         private:
             s32 x;
@@ -157,14 +157,14 @@ namespace pu::ui::elm {
             PU_CLASS_POD_GETSET(BackgroundColor, bg_clr, Color)
 
             /**
-             * @brief Sets the background color of the Button.
-             * @param bg_clr New background color to set.
+             * @brief Sets the font of the content of the Button.
+             * @param font_name New font to set.
              */
             void SetContentFont(const std::string &font_name);
 
             /**
-             * @brief Sets the font of the content of the Button.
-             * @param font_name New font to set.
+             * @brief Sets the click callback for the Button.
+             * @param on_click_cb Click callback to set.
              */
             inline void SetOnClick(OnClickCallback on_click_cb) {
                 this->on_click_cb = on_click_cb;

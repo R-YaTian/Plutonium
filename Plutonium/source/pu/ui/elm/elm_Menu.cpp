@@ -112,7 +112,7 @@ namespace pu::ui::elm {
         this->item_touched = false;
         this->items_focus_clr = items_focus_clr;
         this->move_status = MoveStatus::None;
-        this->font_name = GetDefaultFont(DefaultFontSize::MediumLarge);
+        this->font_name = GetDefaultFont(DefaultFontSize::Large);
         this->item_alpha_incr_steps = DefaultItemAlphaIncrementSteps;
         this->icon_item_sizes_factor = DefaultIconItemSizesFactor;
         this->icon_margin = DefaultIconMargin;

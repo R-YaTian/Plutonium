@@ -21,7 +21,7 @@ namespace pu::ui::elm {
             static constexpr u32 DefaultContentHorizontalMargin = 30;
             static constexpr u32 DefaultContentVerticalMargin = 20;
 
-            static constexpr DefaultFontSize DefaultContentFontSize = DefaultFontSize::MediumLarge;
+            static constexpr DefaultFontSize DefaultContentFontSize = DefaultFontSize::Large;
 
             static constexpr u8 DefaultToggleAlphaIncrement = 48;
 

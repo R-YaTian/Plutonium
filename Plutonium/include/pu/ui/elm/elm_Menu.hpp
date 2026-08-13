@@ -337,8 +337,8 @@ namespace pu::ui::elm {
             PU_CLASS_POD_GETSET(MoveWaitTimeMs, move_wait_time_ms, s64)
 
             /**
-             * @brief Sets the font name to use for the Menu.
-             * @param font_name Name of the font to use.
+             * @brief Sets the callback function to be called when the selection changes.
+             * @param on_selection_changed_cb Callback function.
              */
             inline void SetOnSelectionChanged(OnSelectionChangedCallback on_selection_changed_cb) {
                 this->on_selection_changed_cb = on_selection_changed_cb;
