@@ -148,7 +148,7 @@ namespace pu::ui::elm {
 
             static constexpr Color DefaultScrollbarColor = { 95, 95, 95, 0xFF };
 
-            static constexpr u8 DefaultItemAlphaIncrementSteps = 15;
+            static constexpr u32 DefaultItemsFocusBorderRadius = 7;
 
             static constexpr float DefaultIconItemSizesFactor = 0.8f;
 
@@ -199,7 +199,7 @@ namespace pu::ui::elm {
             std::vector<MenuItem::Ref> items;
             std::string font_name;
             std::vector<sdl2::Texture> loaded_name_texs;
-            u8 item_alpha_incr_steps;
+            u32 items_focus_border_radius;
             float icon_item_sizes_factor;
             u32 icon_margin;
             u32 text_margin;
@@ -309,7 +309,7 @@ namespace pu::ui::elm {
             PU_CLASS_POD_GETSET(ItemsFocusColor, items_focus_clr, Color)
             PU_CLASS_POD_GETSET(ItemsColor, items_clr, Color)
             PU_CLASS_POD_GETSET(ScrollbarColor, scrollbar_clr, Color)
-            PU_CLASS_POD_GETSET(ItemAlphaIncrementSteps, item_alpha_incr_steps, u8)
+            PU_CLASS_POD_GETSET(ItemsFocusBorderRadius, items_focus_border_radius, u32)
             PU_CLASS_POD_GETSET(IconItemSizesFactor, icon_item_sizes_factor, float)
             PU_CLASS_POD_GETSET(IconMargin, icon_margin, u32)
             PU_CLASS_POD_GETSET(TextMargin, text_margin, u32)

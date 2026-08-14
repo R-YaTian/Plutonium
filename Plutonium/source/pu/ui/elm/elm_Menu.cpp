@@ -47,11 +47,6 @@ namespace pu::ui::elm {
                 this->prev_selected_item_idx = this->selected_item_idx;
                 this->selected_item_idx--;
                 this->HandleOnSelectionChanged();
-
-                this->selected_item_alpha = 0xFF;
-                this->selected_item_alpha_incr.StartToZero(this->item_alpha_incr_steps, 0xFF);
-                this->prev_selected_item_alpha = 0x0;
-                this->prev_selected_item_alpha_incr.StartFromZero(this->item_alpha_incr_steps, 0xFF);
             }
         }
         else {
@@ -76,11 +71,6 @@ namespace pu::ui::elm {
                 this->prev_selected_item_idx = this->selected_item_idx;
                 this->selected_item_idx++;
                 this->HandleOnSelectionChanged();
-
-                this->selected_item_alpha = 0xFF;
-                this->selected_item_alpha_incr.StartToZero(this->item_alpha_incr_steps, 0xFF);
-                this->prev_selected_item_alpha = 0x0;
-                this->prev_selected_item_alpha_incr.StartFromZero(this->item_alpha_incr_steps, 0xFF);
             }
         }
         else {
@@ -113,7 +103,7 @@ namespace pu::ui::elm {
         this->items_focus_clr = items_focus_clr;
         this->move_status = MoveStatus::None;
         this->font_name = GetDefaultFont(DefaultFontSize::Large);
-        this->item_alpha_incr_steps = DefaultItemAlphaIncrementSteps;
+        this->items_focus_border_radius = DefaultItemsFocusBorderRadius;
         this->icon_item_sizes_factor = DefaultIconItemSizesFactor;
         this->icon_margin = DefaultIconMargin;
         this->text_margin = DefaultTextMargin;
@@ -171,14 +161,28 @@ namespace pu::ui::elm {
                 auto name_tex = this->loaded_name_texs.at(loaded_tex_idx);
                 if(this->selected_item_idx == i) {
                     drawer->RenderRectangleFill(this->items_clr, x, cur_item_y, this->w, this->items_h);
-                    if(this->selected_item_alpha < 0xFF) {
-                        const auto focus_clr = this->MakeItemsFocusColor(this->selected_item_alpha);
-                        drawer->RenderRectangleFill(focus_clr, x, cur_item_y, this->w, this->items_h);
-                        this->selected_item_alpha_incr.Increment(this->selected_item_alpha);
+                    s32 rect_width = 0;
+                    s32 base_x = x;
+                    const auto &item = this->items.at(i);
+                    if (item->HasIcon())
+                    {
+                        rect_width = this->w - this->icon_margin - this->text_margin;
+                        base_x = x + this->icon_margin;
                     }
-                    else {
-                        drawer->RenderRectangleFill(this->items_focus_clr, x, cur_item_y, this->w, this->items_h);
+                    else
+                    {
+                        rect_width = this->w - this->text_margin * 2;
+                        base_x = x + this->text_margin;
                     }
+                    drawer->RenderRoundedRectangle(this->items_focus_clr, base_x, cur_item_y, rect_width, this->items_h, this->items_focus_border_radius, 7);
+                    // if(this->selected_item_alpha < 0xFF) {
+                    //     const auto focus_clr = this->MakeItemsFocusColor(this->selected_item_alpha);
+                    //     drawer->RenderRectangleFill(focus_clr, x, cur_item_y, this->w, this->items_h);
+                    //     this->selected_item_alpha_incr.Increment(this->selected_item_alpha);
+                    // }
+                    // else {
+                    //     drawer->RenderRectangleFill(this->items_focus_clr, x, cur_item_y, this->w, this->items_h);
+                    // }
                 }
                 else if(this->prev_selected_item_idx == static_cast<s32>(i)) {
                     drawer->RenderRectangleFill(this->items_clr, x, cur_item_y, this->w, this->items_h);
@@ -268,14 +272,6 @@ namespace pu::ui::elm {
                     this->prev_selected_item_idx = this->selected_item_idx;
                     this->selected_item_idx = i;
                     this->HandleOnSelectionChanged();
-                    if(i == this->selected_item_idx) {
-                        this->selected_item_alpha = 0xFF;
-                        this->selected_item_alpha_incr.StartToZero(this->item_alpha_incr_steps, 0xFF);
-                    }
-                    else if(static_cast<s32>(i) == this->prev_selected_item_idx) {
-                        this->prev_selected_item_alpha = 0;
-                        this->prev_selected_item_alpha_incr.StartFromZero(this->item_alpha_incr_steps, 0xFF);
-                    }
                     break;
                 }
                 cur_item_y += this->items_h;

@@ -222,7 +222,7 @@ namespace pu::ui::render {
         SDL_RenderFillRect(g_Renderer, &rect);
     }
 	
-    void Renderer::RenderRoundedRectangle(const Color clr, const s32 x, const s32 y, const s32 width, const s32 height, const s32 radius) {
+    void Renderer::RenderRoundedRectangle(const Color clr, const s32 x, const s32 y, const s32 width, const s32 height, const s32 radius, const s32 thick) {
         auto proper_radius = radius;
         if((2 * proper_radius) > width) {
             proper_radius = width / 2;
@@ -230,8 +230,22 @@ namespace pu::ui::render {
         if((2 * proper_radius) > height) {
             proper_radius = height / 2;
         }
-        
-        roundedRectangleRGBA(g_Renderer, x + this->base_x, y + this->base_y, x + this->base_x + width, y + this->base_y + height, proper_radius, clr.r, clr.g, clr.b, this->GetActualAlpha(clr.a));
+
+        const auto draw_x = x + this->base_x;
+        const auto draw_y = y + this->base_y;
+        const auto alpha = this->GetActualAlpha(clr.a);
+
+        const auto half_thick = thick / 2.0f;
+        const auto arc_radius = proper_radius - half_thick;
+        aaArcRGBA(g_Renderer, draw_x + proper_radius, draw_y + proper_radius, arc_radius, arc_radius, 180, 270, thick, clr.r, clr.g, clr.b, alpha);
+        aaArcRGBA(g_Renderer, draw_x + width - proper_radius, draw_y + proper_radius, arc_radius, arc_radius, 270, 360, thick, clr.r, clr.g, clr.b, alpha);
+        aaArcRGBA(g_Renderer, draw_x + width - proper_radius, draw_y + height - proper_radius, arc_radius, arc_radius, 0, 90, thick, clr.r, clr.g, clr.b, alpha);
+        aaArcRGBA(g_Renderer, draw_x + proper_radius, draw_y + height - proper_radius, arc_radius, arc_radius, 90, 180, thick, clr.r, clr.g, clr.b, alpha);
+
+        thickLineRGBA(g_Renderer, draw_x + proper_radius, draw_y + half_thick, draw_x + width - proper_radius, draw_y + half_thick, thick, clr.r, clr.g, clr.b, alpha);
+        thickLineRGBA(g_Renderer, draw_x + width - half_thick, draw_y + proper_radius, draw_x + width - half_thick, draw_y + height - proper_radius, thick, clr.r, clr.g, clr.b, alpha);
+        thickLineRGBA(g_Renderer, draw_x + proper_radius, draw_y + height - half_thick, draw_x + width - proper_radius, draw_y + height - half_thick, thick, clr.r, clr.g, clr.b, alpha);
+        thickLineRGBA(g_Renderer, draw_x + half_thick, draw_y + proper_radius, draw_x + half_thick, draw_y + height - proper_radius, thick, clr.r, clr.g, clr.b, alpha);
         SDL_SetRenderDrawBlendMode(g_Renderer, SDL_BLENDMODE_BLEND);
     }
 

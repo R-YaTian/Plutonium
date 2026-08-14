@@ -316,9 +316,10 @@ namespace pu::ui::render {
              * @param width The width of the rectangle.
              * @param height The height of the rectangle.
              * @param radius The radius of the rounded corners.
+             * @param thick The width of the border.
              * @note This function should be called each render loop / OnRender call.
              */
-            void RenderRoundedRectangle(const Color clr, const s32 x, const s32 y, const s32 width, const s32 height, const s32 radius);
+            void RenderRoundedRectangle(const Color clr, const s32 x, const s32 y, const s32 width, const s32 height, const s32 radius, const s32 thick = 1);
 
             /**
              * @brief Renders a filled rounded rectangle to the screen.
