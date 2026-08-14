@@ -146,7 +146,7 @@ namespace pu::ui::elm {
         public:
             // Self-explanatory constants
 
-            static constexpr Color DefaultScrollbarColor = { 110, 110, 110, 0xFF };
+            static constexpr Color DefaultScrollbarColor = { 95, 95, 95, 0xFF };
 
             static constexpr u8 DefaultItemAlphaIncrementSteps = 15;
 
@@ -155,9 +155,9 @@ namespace pu::ui::elm {
             static constexpr u32 DefaultIconMargin = 37;
             static constexpr u32 DefaultTextMargin = 37;
 
-            static constexpr u8 DefaultLightScrollbarColorFactor = 30;
+            static constexpr u8 DefaultScrollbarMargin = 7;
 
-            static constexpr u32 DefaultScrollbarWidth = 30;
+            static constexpr u32 DefaultScrollbarWidth = 10;
 
             static constexpr u32 DefaultShadowHeight = 7;
             static constexpr u8 DefaultShadowBaseAlpha = 160;
@@ -203,7 +203,7 @@ namespace pu::ui::elm {
             float icon_item_sizes_factor;
             u32 icon_margin;
             u32 text_margin;
-            u8 light_scrollbar_color_factor;
+            u32 scrollbar_margin;
             u32 scrollbar_width;
             u32 shadow_height;
             u8 shadow_base_alpha;
@@ -215,23 +215,6 @@ namespace pu::ui::elm {
 
             inline Color MakeItemsFocusColor(const u8 alpha) {
                 return this->items_focus_clr.WithAlpha(alpha);
-            }
-
-            inline constexpr Color MakeLighterScrollbarColor() {
-                s32 base_r = this->scrollbar_clr.r - this->light_scrollbar_color_factor;
-                if(base_r < 0) {
-                    base_r = 0;
-                }
-                s32 base_g = this->scrollbar_clr.g - this->light_scrollbar_color_factor;
-                if(base_g < 0) {
-                    base_g = 0;
-                }
-                s32 base_b = this->scrollbar_clr.b - this->light_scrollbar_color_factor;
-                if(base_b < 0) {
-                    base_b = 0;
-                }
-
-                return { static_cast<u8>(base_r), static_cast<u8>(base_g), static_cast<u8>(base_b), this->scrollbar_clr.a };
             }
 
             inline void HandleOnSelectionChanged() {
@@ -330,7 +313,7 @@ namespace pu::ui::elm {
             PU_CLASS_POD_GETSET(IconItemSizesFactor, icon_item_sizes_factor, float)
             PU_CLASS_POD_GETSET(IconMargin, icon_margin, u32)
             PU_CLASS_POD_GETSET(TextMargin, text_margin, u32)
-            PU_CLASS_POD_GETSET(LightScrollbarColorFactor, light_scrollbar_color_factor, u8)
+            PU_CLASS_POD_GETSET(ScrollbarMargin, scrollbar_margin, u32)
             PU_CLASS_POD_GETSET(ScrollbarWidth, scrollbar_width, u32)
             PU_CLASS_POD_GETSET(ShadowHeight, shadow_height, u32)
             PU_CLASS_POD_GETSET(ShadowBaseAlpha, shadow_base_alpha, u8)

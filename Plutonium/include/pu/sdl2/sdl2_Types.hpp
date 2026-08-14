@@ -11,6 +11,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <pu/pu_Include.hpp>
 #include <pu/sdl2/sdl2_CustomTtf.h>
+#include <pu/sdl2/sdl2_gfx_ext.hpp>
 
 namespace pu::sdl2 {
 

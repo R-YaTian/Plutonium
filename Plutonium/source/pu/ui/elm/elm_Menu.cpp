@@ -117,7 +117,7 @@ namespace pu::ui::elm {
         this->icon_item_sizes_factor = DefaultIconItemSizesFactor;
         this->icon_margin = DefaultIconMargin;
         this->text_margin = DefaultTextMargin;
-        this->light_scrollbar_color_factor = DefaultLightScrollbarColorFactor;
+        this->scrollbar_margin = DefaultScrollbarMargin;
         this->scrollbar_width = DefaultScrollbarWidth;
         this->shadow_height = DefaultShadowHeight;
         this->shadow_base_alpha = DefaultShadowBaseAlpha;
@@ -221,15 +221,13 @@ namespace pu::ui::elm {
             }
 
             if(this->items_to_show < this->items.size()) {
-                const auto scrollbar_x = x + (this->w - this->scrollbar_width);
+                const auto scrollbar_x = x + (this->w - this->scrollbar_width) - this->scrollbar_margin;
                 const auto scrollbar_height = this->GetHeight();
-                drawer->RenderRectangleFill(this->scrollbar_clr, scrollbar_x, y, this->scrollbar_width, scrollbar_height);
 
-                const auto light_scrollbar_clr = this->MakeLighterScrollbarColor();
                 const auto scrollbar_factor = (double)this->items_to_show / (double)this->items.size();
                 const auto scrollbar_front_height = (u32)(scrollbar_height * scrollbar_factor);
                 const auto scrollbar_front_y = y + (u32)(this->advanced_item_count * ((double)scrollbar_height / (double)this->items.size()));
-                drawer->RenderRectangleFill(light_scrollbar_clr, scrollbar_x, scrollbar_front_y, this->scrollbar_width, scrollbar_front_height);
+                drawer->RenderRoundedRectangleFill(this->scrollbar_clr, scrollbar_x, scrollbar_front_y, this->scrollbar_width, scrollbar_front_height, this->scrollbar_width / 2);
             }
             drawer->RenderShadowSimple(x, cur_item_y, this->w, this->shadow_height, this->shadow_base_alpha);
         }

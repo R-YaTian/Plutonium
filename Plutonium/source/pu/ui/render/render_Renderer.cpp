@@ -243,8 +243,29 @@ namespace pu::ui::render {
         if((2 * proper_radius) > height) {
             proper_radius = height / 2;
         }
-        
-        roundedBoxRGBA(g_Renderer, x + this->base_x, y + this->base_y, x + this->base_x + width, y + this->base_y + height, proper_radius, clr.r, clr.g, clr.b, this->GetActualAlpha(clr.a));
+
+        const auto draw_x = x + this->base_x;
+        const auto draw_y = y + this->base_y;
+        const auto alpha = this->GetActualAlpha(clr.a);
+        if(proper_radius <= 0) {
+            SDL_SetRenderDrawColor(g_Renderer, clr.r, clr.g, clr.b, alpha);
+            SDL_Rect rect = { draw_x, draw_y, width, height };
+            SDL_RenderFillRect(g_Renderer, &rect);
+            return;
+        }
+
+        aaFilledPieRGBA(g_Renderer, draw_x + proper_radius, draw_y + proper_radius, proper_radius, proper_radius, 180, 270, 0, clr.r, clr.g, clr.b, alpha);
+        aaFilledPieRGBA(g_Renderer, draw_x + width - proper_radius, draw_y + proper_radius, proper_radius, proper_radius, 270, 360, 0, clr.r, clr.g, clr.b, alpha);
+        aaFilledPieRGBA(g_Renderer, draw_x + width - proper_radius, draw_y + height - proper_radius, proper_radius, proper_radius, 0, 90, 0, clr.r, clr.g, clr.b, alpha);
+        aaFilledPieRGBA(g_Renderer, draw_x + proper_radius, draw_y + height - proper_radius, proper_radius, proper_radius, 90, 180, 0, clr.r, clr.g, clr.b, alpha);
+
+        SDL_SetRenderDrawColor(g_Renderer, clr.r, clr.g, clr.b, alpha);
+        SDL_Rect rect = { draw_x, draw_y + proper_radius, proper_radius, height - (2 * proper_radius) };
+        SDL_RenderFillRect(g_Renderer, &rect);
+        rect = { draw_x + proper_radius, draw_y, width - (2 * proper_radius), height };
+        SDL_RenderFillRect(g_Renderer, &rect);
+        rect = { draw_x + width - proper_radius, draw_y + proper_radius, proper_radius, height - (2 * proper_radius) };
+        SDL_RenderFillRect(g_Renderer, &rect);
         SDL_SetRenderDrawBlendMode(g_Renderer, SDL_BLENDMODE_BLEND);
     }
 
