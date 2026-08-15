@@ -29,18 +29,21 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(FREETYPE REQUIRED freetype2)
 
-# Build custom SDL2_mixer before compiling main library
-add_custom_target(build_sdl2_mixer ALL
-	COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build-sdl2-mixer.sh
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	COMMENT "Building custom SDL2_mixer library"
-)
+# Build custom SDL2 libraries only when either static library is missing.
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/libSDL2_image.a" OR
+   NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/libSDL2_mixer.a")
+    add_custom_target(build_sdl2_mixer ALL
+        COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build-sdl2-mixer.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Building custom SDL2_mixer library"
+    )
 
-add_custom_target(build_sdl2_image ALL
-	COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build-sdl2-image.sh
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	COMMENT "Building SDL2_image library"
-)
+    add_custom_target(build_sdl2_image ALL
+        COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build-sdl2-image.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Building SDL2_image library"
+    )
+endif()
 
 # Source directories
 set(SOURCE_DIRS
@@ -68,8 +71,9 @@ endforeach()
 # Create static library
 add_library(pu STATIC ${SOURCES})
 
-# Ensure SDL2_mixer is built before compiling pu
-add_dependencies(pu build_sdl2_mixer build_sdl2_image)
+if(TARGET build_sdl2_mixer AND TARGET build_sdl2_image)
+    add_dependencies(pu build_sdl2_mixer build_sdl2_image)
+endif()
 
 # Set target properties
 set_target_properties(pu PROPERTIES
