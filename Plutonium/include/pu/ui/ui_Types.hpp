@@ -41,9 +41,7 @@ namespace pu::ui {
      * @param kind DefaultFontSize to get the value from.
      * @return Default font size value.
      */
-    inline constexpr u32 GetDefaultFontSize(const DefaultFontSize kind) {
-        return DefaultFontSizes[static_cast<u32>(kind)];
-    }
+    const u32 GetDefaultFontSize(const DefaultFontSize kind);
 
     /**
      * @brief Gets the default font name for the specified DefaultFontSize.

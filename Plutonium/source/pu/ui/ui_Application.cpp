@@ -23,8 +23,8 @@ namespace pu::ui {
         if(tch_state.count > 0) {
             // Touch positions are based on a default 1280x720 size, need to scale them to our width/height
             tch_pos = {
-                (u32)((double)tch_state.touches[0].x * render::ScreenFactor),
-                (u32)((double)tch_state.touches[0].y * render::ScreenFactor)
+                (u32)((double)tch_state.touches[0].x * render::TouchScreenFactorX),
+                (u32)((double)tch_state.touches[0].y * render::TouchScreenFactorY)
             };
         }
         const auto sim_tch_pos = this->lyt->ConsumeSimulatedTouchPosition();
@@ -62,15 +62,15 @@ namespace pu::ui {
         if(lyt_bg_tex != nullptr) {
             const auto x_offset = this->lyt->GetBackgroundImageXOffset();
             if(x_offset == 0) {
-                this->renderer->RenderTexture(lyt_bg_tex->Get(), 0, 0);
+                this->renderer->RenderTexture(lyt_bg_tex->Get(), 0, 0, render::TextureRenderOptions({}, render::ScreenWidth, render::ScreenHeight, {}, {}, {}));
             }
             else if(x_offset > 0) {
-                this->renderer->RenderTexture(lyt_bg_tex->Get(), x_offset, 0);
-                this->renderer->RenderTexture(lyt_bg_tex->Get(), x_offset - render::ScreenWidth, 0);
+                this->renderer->RenderTexture(lyt_bg_tex->Get(), x_offset, 0, render::TextureRenderOptions({}, render::ScreenWidth, render::ScreenHeight, {}, {}, {}));
+                this->renderer->RenderTexture(lyt_bg_tex->Get(), x_offset - render::ScreenWidth, 0, render::TextureRenderOptions({}, render::ScreenWidth, render::ScreenHeight, {}, {}, {}));
             }
             else if(x_offset < 0) {
-                this->renderer->RenderTexture(lyt_bg_tex->Get(), x_offset, 0);
-                this->renderer->RenderTexture(lyt_bg_tex->Get(), x_offset + render::ScreenWidth, 0);
+                this->renderer->RenderTexture(lyt_bg_tex->Get(), x_offset, 0, render::TextureRenderOptions({}, render::ScreenWidth, render::ScreenHeight, {}, {}, {}));
+                this->renderer->RenderTexture(lyt_bg_tex->Get(), x_offset + render::ScreenWidth, 0, render::TextureRenderOptions({}, render::ScreenWidth, render::ScreenHeight, {}, {}, {}));
             }
         }
 

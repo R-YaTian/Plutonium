@@ -41,8 +41,6 @@ namespace pu::ui {
             static constexpr u32 DefaultContentX = 67;
             static constexpr u32 DefaultContentY = 210;
 
-            static constexpr u32 DefaultIconExtraHeight = 37;
-
             static constexpr u32 DefaultOptionsBaseHorizontalMargin = 67;
             static constexpr u32 DefaultOptionHeight = 90;
             static constexpr u32 DefaultOptionHorizontalMargin = 45;

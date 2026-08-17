@@ -1,7 +1,12 @@
 #include <SDL2/SDL_image.h>
 #include <pu/ui/render/render_Renderer.hpp>
 
-namespace pu::ui::render {
+namespace pu::ui::render
+{
+    u32 ScreenWidth = 1920;
+    u32 ScreenHeight = 1080;
+    double TouchScreenFactorX = 1.5f;
+    double TouchScreenFactorY = 1.5f;
 
     namespace {
 
@@ -86,7 +91,11 @@ namespace pu::ui::render {
                     } \
                 }
 
-                _CREATE_DEFAULT_FONT_FOR_SIZES(DefaultFontSizes);
+                u32 _defaultFontSizes[static_cast<u32>(DefaultFontSize::Count)];
+                for(u32 i = 0; i < static_cast<u32>(DefaultFontSize::Count); ++i) {
+                    _defaultFontSizes[i] = GetDefaultFontSize(static_cast<DefaultFontSize>(i));
+                }
+                _CREATE_DEFAULT_FONT_FOR_SIZES(_defaultFontSizes);
                 _CREATE_DEFAULT_FONT_FOR_SIZES(this->init_opts.extra_default_font_sizes);
             }
 

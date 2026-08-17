@@ -12,15 +12,15 @@
 #include <pu/ttf/ttf_Font.hpp>
 #include <vector>
 
-namespace pu::ui::render {
+namespace pu::ui::render
+{
+    constexpr u32 BaseScreenWidth = 1920;
+    constexpr u32 BaseScreenHeight = 1080;
 
-    constexpr u32 BaseScreenWidth = 1280;
-    constexpr u32 BaseScreenHeight = 720;
-    
-    constexpr u32 ScreenWidth = 1920;
-    constexpr u32 ScreenHeight = 1080;
-
-    constexpr double ScreenFactor = (double)ScreenWidth / (double)BaseScreenWidth;
+    extern u32 ScreenWidth;
+    extern u32 ScreenHeight;
+    extern double TouchScreenFactorX;
+    extern double TouchScreenFactorY;
 
     /**
      * @brief Represents the options for initializing the Renderer.
@@ -48,7 +48,13 @@ namespace pu::ui::render {
          * @param w The width of the screen. By default, it is set to 1920.
          * @param h The height of the screen. By default, it is set to 1080.
          */
-        RendererInitOptions(const u32 sdl_flags, const u32 sdl_render_flags, const u32 w = ScreenWidth, const u32 h = ScreenHeight) : sdl_flags(sdl_flags), sdl_render_flags(sdl_render_flags), width(w), height(h), pl_srv_type(-1), default_shared_fonts(), default_font_paths(), extra_default_font_sizes(), init_img(false), sdl_img_flags(0), init_romfs(false), pad_player_count(1), pad_id_mask(0), pad_style_tag(0) {}
+        RendererInitOptions(const u32 sdl_flags, const u32 sdl_render_flags, const u32 w = BaseScreenWidth, const u32 h = BaseScreenHeight) : sdl_flags(sdl_flags), sdl_render_flags(sdl_render_flags), width(w), height(h), pl_srv_type(-1), default_shared_fonts(), default_font_paths(), extra_default_font_sizes(), init_img(false), sdl_img_flags(0), init_romfs(false), pad_player_count(1), pad_id_mask(0), pad_style_tag(0)
+        {
+            ScreenWidth = w;
+            ScreenHeight = h;
+            TouchScreenFactorX = (double)ScreenWidth / (double)1280;
+            TouchScreenFactorY = (double)ScreenHeight / (double)720;
+        }
 
         /**
          * @brief Sets the pl: service type to use.

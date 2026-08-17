@@ -191,8 +191,8 @@ namespace pu::ui {
                 const auto keys_down = app_ref->GetButtonsDown();
                 const auto tch_state = app_ref->GetTouchState();
                 const TouchPoint tch_pos = {
-                    (u32)((double)tch_state.touches[0].x * render::ScreenFactor),
-                    (u32)((double)tch_state.touches[0].y * render::ScreenFactor)
+                    (u32)((double)tch_state.touches[0].x * render::TouchScreenFactorX),
+                    (u32)((double)tch_state.touches[0].y * render::TouchScreenFactorY)
                 };
                 if(keys_down & HidNpadButton_AnyLeft) {
                     if(this->selected_opt_idx > 0) {

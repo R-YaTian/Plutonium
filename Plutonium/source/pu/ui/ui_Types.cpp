@@ -1,4 +1,5 @@
 #include <pu/ui/ui_Types.hpp>
+#include <pu/ui/render/render_Renderer.hpp>
 
 namespace pu::ui {
 
@@ -24,4 +25,9 @@ namespace pu::ui {
         return { r_val, g_val, b_val, a_val };
     }
 
+    const u32 GetDefaultFontSize(const DefaultFontSize kind)
+    {
+        double factor = (double)render::BaseScreenWidth / (double)render::ScreenWidth;
+        return static_cast<u32>(DefaultFontSizes[static_cast<u32>(kind)] / factor);
+    }
 }
