@@ -15,6 +15,8 @@ namespace pu::ui {
 
     void Dialog::DisposeIcon() {
         this->icon_tex = {};
+        this->icon_width = 0;
+        this->icon_height = 0;
     }
 
     Dialog::Dialog(const std::string &title, const std::string &content) {
@@ -26,6 +28,8 @@ namespace pu::ui {
         this->title_tex = nullptr;
         this->cnt_tex = nullptr;
         this->icon_tex = nullptr;
+        this->icon_width = 0;
+        this->icon_height = 0;
         this->selected_opt_idx = 0;
         this->prev_selected_opt_idx = 0;
         this->selected_opt_over_alpha = 0xFF;
@@ -95,6 +99,8 @@ namespace pu::ui {
     void Dialog::SetIcon(sdl2::TextureHandle::Ref tex) {
         this->DisposeIcon();
         this->icon_tex = tex;
+        this->icon_width = render::GetTextureWidth(tex->Get());
+        this->icon_height = render::GetTextureHeight(tex->Get());
     }
 
     s32 Dialog::Show(Application *app_ref) {
@@ -143,12 +149,12 @@ namespace pu::ui {
         auto opt_base_y = title_cnt_height;
     
         if(this->HasIcon()) {
-            const auto icon_height = render::GetTextureHeight(this->icon_tex->Get()) + 2 * this->icon_margin;
+            const auto icon_height = this->icon_height + 2 * this->icon_margin;
             if(icon_height > opt_base_y) {
                 opt_base_y = icon_height;
             }
 
-            const auto icon_width = render::GetTextureWidth(this->icon_tex->Get()) + 2 * this->icon_margin;
+            const auto icon_width = this->icon_width + 2 * this->icon_margin;
 
             const auto icon_title_width = title_width + icon_width;
             if(icon_title_width > dialog_width) {
@@ -273,10 +279,10 @@ namespace pu::ui {
                 drawer->RenderTexture(this->cnt_tex, dialog_x + this->cnt_x, dialog_y + this->cnt_y);
                 
                 if(this->HasIcon()) {
-                    const auto icon_width = render::GetTextureWidth(this->icon_tex->Get());
+                    const auto icon_width = this->icon_width;
                     const auto icon_x = dialog_x + (dialog_width - (icon_width + 2 * this->icon_margin));
                     const auto icon_y = dialog_y + this->icon_margin;
-                    drawer->RenderTexture(this->icon_tex->Get(), icon_x, icon_y, render::TextureRenderOptions(static_cast<u8>(initial_fade_alpha), {}, {}, {}, {}, {}));
+                    drawer->RenderTexture(this->icon_tex->Get(), icon_x, icon_y, render::TextureRenderOptions(static_cast<u8>(initial_fade_alpha), this->icon_width, this->icon_height, {}, {}, {}));
                 }
 
                 auto cur_opt_x = dialog_x + this->opts_base_h_margin;

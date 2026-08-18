@@ -360,18 +360,6 @@ namespace pu::ui::render
             void RenderCircleFill(const Color clr, const s32 x, const s32 y, const s32 radius);
 
             /**
-             * @brief Renders a simple shadow to the screen.
-             * @param x The X position to render the shadow.
-             * @param y The Y position to render the shadow.
-             * @param width The width of the shadow.
-             * @param height The height of the shadow.
-             * @param base_alpha The base alpha to use for the shadow. This is the starting alpha value at the top of the shadow.
-             * @param main_alpha The main alpha to use for the shadow. The shadow's alpha will be blended with this value.
-             * @note This function should be called each render loop / OnRender call.
-             */
-            void RenderShadowSimple(const s32 x, const s32 y, const s32 width, const s32 height, const s32 base_alpha, const u8 main_alpha = 0xFF);
-
-            /**
              * @brief Begins a rectangular clipping region.
              * @param x The X position of the clipping region.
              * @param y The Y position of the clipping region.

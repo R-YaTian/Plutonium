@@ -109,8 +109,6 @@ namespace pu::ui::elm {
         this->text_margin = DefaultTextMargin;
         this->scrollbar_margin = DefaultScrollbarMargin;
         this->scrollbar_width = DefaultScrollbarWidth;
-        this->shadow_height = DefaultShadowHeight;
-        this->shadow_base_alpha = DefaultShadowBaseAlpha;
         this->move_wait_time_ms = DefaultMoveWaitTimeMs;
     }
 
@@ -233,7 +231,6 @@ namespace pu::ui::elm {
                 const auto scrollbar_front_y = y + (u32)(this->advanced_item_count * ((double)scrollbar_height / (double)this->items.size()));
                 drawer->RenderRoundedRectangleFill(this->scrollbar_clr, scrollbar_x, scrollbar_front_y, this->scrollbar_width, scrollbar_front_height, this->scrollbar_width / 2);
             }
-            drawer->RenderShadowSimple(x, cur_item_y, this->w, this->shadow_height, this->shadow_base_alpha);
         }
     }
 

@@ -75,6 +75,8 @@ namespace pu::ui {
             SigmoidIncrementer<s32> prev_selected_opt_over_alpha_incr;
             bool user_cancelled;
             sdl2::TextureHandle::Ref icon_tex;
+            u32 icon_width;
+            u32 icon_height;
             Color title_clr;
             Color cnt_clr;
             Color opt_clr;
@@ -202,6 +204,8 @@ namespace pu::ui {
             PU_CLASS_POD_GETSET(OptionBottomMargin, opt_bottom_margin, u32)
             PU_CLASS_POD_GETSET(MaxScreenFadeAlpha, max_screen_fade_alpha, u8)
             PU_CLASS_POD_GETSET(IconMargin, icon_margin, u32)
+            PU_CLASS_POD_GETSET(IconWidth, icon_width, u32)
+            PU_CLASS_POD_GETSET(IconHeight, icon_height, u32)
             PU_CLASS_POD_GETSET(DialogColor, dialog_clr, Color)
             PU_CLASS_POD_GETSET(OverColor, over_clr, Color)
             PU_CLASS_POD_GETSET(OverAlphaIncrementSteps, over_alpha_incr_steps, u8)

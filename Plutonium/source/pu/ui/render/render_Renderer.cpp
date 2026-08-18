@@ -302,23 +302,6 @@ namespace pu::ui::render
         aacircleRGBA(g_Renderer, x + this->base_x, y + this->base_y, radius - 1, clr.r, clr.g, clr.b, this->GetActualAlpha(clr.a));
     }
 
-    void Renderer::RenderShadowSimple(const s32 x, const s32 y, const s32 width, const s32 height, const s32 base_alpha, const u8 main_alpha) {
-        auto crop = false;
-        auto shadow_width = width;
-        auto shadow_x = x;
-        auto shadow_y = y;
-        for(auto cur_a = base_alpha; cur_a > 0; cur_a -= (180 / height)) {
-            const Color shadow_clr = { 130, 130, 130, static_cast<u8>(cur_a * (main_alpha / 0xFF)) };
-            this->RenderRectangleFill(shadow_clr, shadow_x + this->base_x, shadow_y + this->base_y, shadow_width, 1);
-            if(crop) {
-                shadow_width -= 2;
-                shadow_x++;
-            }
-            crop = !crop;
-            shadow_y++;
-        }
-    }
-
     void Renderer::BeginClipRect(s32 x, s32 y, s32 width, s32 height) {
         SDL_Rect clip {
             x + this->base_x,

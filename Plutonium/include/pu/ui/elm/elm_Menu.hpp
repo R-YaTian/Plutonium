@@ -159,9 +159,6 @@ namespace pu::ui::elm {
 
             static constexpr u32 DefaultScrollbarWidth = 10;
 
-            static constexpr u32 DefaultShadowHeight = 7;
-            static constexpr u8 DefaultShadowBaseAlpha = 160;
-
             static constexpr s64 DefaultMoveWaitTimeMs = 150;
 
             /**
@@ -205,8 +202,6 @@ namespace pu::ui::elm {
             u32 text_margin;
             u32 scrollbar_margin;
             u32 scrollbar_width;
-            u32 shadow_height;
-            u8 shadow_base_alpha;
             s64 move_wait_time_ms;
 
             void ReloadItemRenders();
@@ -315,8 +310,6 @@ namespace pu::ui::elm {
             PU_CLASS_POD_GETSET(TextMargin, text_margin, u32)
             PU_CLASS_POD_GETSET(ScrollbarMargin, scrollbar_margin, u32)
             PU_CLASS_POD_GETSET(ScrollbarWidth, scrollbar_width, u32)
-            PU_CLASS_POD_GETSET(ShadowHeight, shadow_height, u32)
-            PU_CLASS_POD_GETSET(ShadowBaseAlpha, shadow_base_alpha, u8)
             PU_CLASS_POD_GETSET(MoveWaitTimeMs, move_wait_time_ms, s64)
 
             /**
