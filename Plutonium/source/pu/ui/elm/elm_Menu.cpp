@@ -98,7 +98,7 @@ namespace pu::ui::elm {
         this->prev_selected_item_alpha = 0;
         this->prev_selected_item_alpha_incr = {};
         this->on_selection_changed_cb = {};
-        this->cooldown_enabled = false;
+        this->touch_active = false;
         this->item_touched = false;
         this->items_focus_clr = items_focus_clr;
         this->move_status = MoveStatus::None;
@@ -260,12 +260,20 @@ namespace pu::ui::elm {
             }
         }
         if(!touch_pos.IsEmpty()) {
+            if(this->touch_active) {
+                return;
+            }
+            this->touch_active = true;
             const auto x = this->GetProcessedX();
             auto cur_item_y = this->GetProcessedY();
             const auto item_count = this->GetItemCount();
             for(u32 i = this->advanced_item_count; i < (this->advanced_item_count + item_count); i++) {
                 if(touch_pos.HitsRegion(x, cur_item_y, this->w, this->items_h)) {
-                    this->item_touched = true;
+                    if (this->selected_item_idx == i)
+                    {
+                        this->item_touched = true;
+                        break;
+                    }
                     this->prev_selected_item_idx = this->selected_item_idx;
                     this->selected_item_idx = i;
                     this->HandleOnSelectionChanged();
@@ -274,15 +282,13 @@ namespace pu::ui::elm {
                 cur_item_y += this->items_h;
             }
         }
-        else if(this->item_touched) {
+        else if(this->touch_active) {
             if((this->selected_item_alpha >= 0xFF) && (this->prev_selected_item_alpha <= 0)) {
-                if(this->cooldown_enabled) {
-                    this->cooldown_enabled = false;
-                }
-                else {
+                if(this->item_touched) {
                     this->RunSelectedItemCallback(TouchPseudoKey);
                 }
                 this->item_touched = false;
+                this->touch_active = false;
             }
         }
         else {

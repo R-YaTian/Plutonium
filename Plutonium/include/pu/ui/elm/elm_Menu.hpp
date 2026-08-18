@@ -188,7 +188,7 @@ namespace pu::ui::elm {
             Color scrollbar_clr;
             Color items_clr;
             Color items_focus_clr;
-            bool cooldown_enabled;
+            bool touch_active;
             bool item_touched;
             MoveStatus move_status;
             std::chrono::time_point<std::chrono::steady_clock> move_start_time;
@@ -223,15 +223,12 @@ namespace pu::ui::elm {
                 const auto cb_count = item->GetOnKeyCallbackCount();
                 for(u32 i = 0; i < cb_count; i++) {
                     if(keys & item->GetOnKeyCallbackKey(i)) {
-                        if(!this->cooldown_enabled) {
-                            auto cb = item->GetOnKeyCallback(i);
-                            if(cb) {
-                                cb();
-                            }
+                        auto cb = item->GetOnKeyCallback(i);
+                        if(cb) {
+                            cb();
                         }
                     }
                 }
-                this->cooldown_enabled = false;
             }
 
             inline u32 GetItemCount() {
@@ -339,8 +336,6 @@ namespace pu::ui::elm {
             inline void ForceReloadItems() {
                 this->ReloadItemRenders();
             }
-
-            PU_CLASS_POD_SET(CooldownEnabled, cooldown_enabled, bool)
 
             /**
              * @brief Gets the selected item of the Menu.
