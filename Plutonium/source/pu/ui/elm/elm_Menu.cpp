@@ -103,7 +103,10 @@ namespace pu::ui::elm {
         this->items_focus_clr = items_focus_clr;
         this->move_status = MoveStatus::None;
         this->font_name = GetDefaultFont(DefaultFontSize::Large);
+        this->item_alpha_incr_steps = DefaultItemAlphaIncrementSteps;
+        this->items_focus_border_margin = DefaultItemsFocusBorderMargin;
         this->items_focus_border_radius = DefaultItemsFocusBorderRadius;
+        this->items_focus_border_thick = DefaultItemsFocusBorderThick;
         this->icon_item_sizes_factor = DefaultIconItemSizesFactor;
         this->icon_margin = DefaultIconMargin;
         this->text_margin = DefaultTextMargin;
@@ -159,20 +162,24 @@ namespace pu::ui::elm {
                 auto name_tex = this->loaded_name_texs.at(loaded_tex_idx);
                 if(this->selected_item_idx == i) {
                     drawer->RenderRectangleFill(this->items_clr, x, cur_item_y, this->w, this->items_h);
-                    s32 rect_width = 0;
-                    s32 base_x = x;
+                    s32 rect_width = this->w - this->items_focus_border_margin * 2;
+                    s32 base_x = x + this->items_focus_border_margin;
+                    s32 rect_height = 0, base_y = 0;
                     const auto &item = this->items.at(i);
                     if (item->HasIcon())
                     {
-                        rect_width = this->w - this->icon_margin - this->text_margin;
-                        base_x = x + this->icon_margin;
+                        s32 icon_height = static_cast<s32>(this->items_h * this->icon_item_sizes_factor);
+                        base_y = cur_item_y + (this->items_h - icon_height) / 2 - this->items_focus_border_thick;
+                        rect_height = icon_height + this->items_focus_border_thick * 2;
                     }
                     else
                     {
-                        rect_width = this->w - this->text_margin * 2;
-                        base_x = x + this->text_margin;
+                        base_y = cur_item_y + this->items_focus_border_margin - this->items_focus_border_thick;
+                        rect_height = this->items_h - this->items_focus_border_margin * 2 + this->items_focus_border_thick * 2;
                     }
-                    drawer->RenderRoundedRectangle(this->items_focus_clr, base_x, cur_item_y, rect_width, this->items_h, this->items_focus_border_radius, 7);
+                    drawer->RenderRoundedRectangle(this->items_focus_clr,
+                                                    base_x, base_y, rect_width, rect_height,
+                                                    this->items_focus_border_radius, this->items_focus_border_thick);
                     // if(this->selected_item_alpha < 0xFF) {
                     //     const auto focus_clr = this->MakeItemsFocusColor(this->selected_item_alpha);
                     //     drawer->RenderRectangleFill(focus_clr, x, cur_item_y, this->w, this->items_h);
