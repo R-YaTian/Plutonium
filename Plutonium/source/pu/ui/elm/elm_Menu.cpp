@@ -248,22 +248,33 @@ namespace pu::ui::elm {
 
         const auto down_held = (keys_held & (HidNpadButton_Down | HidNpadButton_StickLDown | HidNpadButton_StickRDown)) != 0;
         const auto up_held = (keys_held & (HidNpadButton_Up | HidNpadButton_StickLUp | HidNpadButton_StickRUp)) != 0;
-        if(((this->move_status == MoveStatus::WaitingDown) && !down_held) ||
-           ((this->move_status == MoveStatus::WaitingUp) && !up_held)) {
+        if(((this->move_status == MoveStatus::WaitingDown || this->move_status == MoveStatus::RepeatingDown) && !down_held) ||
+           ((this->move_status == MoveStatus::WaitingUp || this->move_status == MoveStatus::RepeatingUp) && !up_held)) {
             this->move_status = MoveStatus::None;
         }
 
-        if((this->move_status == MoveStatus::WaitingUp) || (this->move_status == MoveStatus::WaitingDown)) {
+        if((this->move_status == MoveStatus::WaitingUp || this->move_status == MoveStatus::WaitingDown ||
+            this->move_status == MoveStatus::RepeatingUp || this->move_status == MoveStatus::RepeatingDown)) {
             const auto cur_time = std::chrono::steady_clock::now();
             const auto time_diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>(cur_time - this->move_start_time).count();
-            if(time_diff_ms >= this->move_wait_time_ms) {
-                if(this->move_status == MoveStatus::WaitingUp) {
+            const auto wait_time_ms = (this->move_status == MoveStatus::WaitingUp || this->move_status == MoveStatus::WaitingDown) ?
+                DefaultMoveInitialWaitTimeMs : this->move_wait_time_ms;
+            if(time_diff_ms >= wait_time_ms) {
+                if(this->move_status == MoveStatus::WaitingUp || this->move_status == MoveStatus::RepeatingUp) {
                     this->MoveUp();
+                    if (this->move_status == MoveStatus::WaitingUp)
+                    {
+                        this->move_status = MoveStatus::RepeatingUp;
+                    }
                 }
                 else {
                     this->MoveDown();
+                    if (this->move_status == MoveStatus::WaitingDown)
+                    {
+                        this->move_status = MoveStatus::RepeatingDown;
+                    }
                 }
-                this->move_status = MoveStatus::None;
+                this->move_start_time = cur_time;
             }
         }
         if(!touch_pos.IsEmpty()) {
@@ -322,5 +333,4 @@ namespace pu::ui::elm {
             }
         }
     }
-
 }
