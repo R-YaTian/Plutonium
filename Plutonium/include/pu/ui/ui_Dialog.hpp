@@ -216,7 +216,15 @@ namespace pu::ui {
              * @param tex Texture of the icon.
              */
             void SetIcon(sdl2::TextureHandle::Ref tex);
-            
+
+            inline void SetIconMaximumWidth(const s32 width) {
+                this->icon_width = static_cast<u32>(width);
+            }
+
+            inline void SetIconMaximumHeight(const s32 height) {
+                this->icon_height = static_cast<u32>(height);
+            }
+
             /**
              * @brief Checks whether the Dialog has an icon.
              * @return Whether the Dialog has an icon.

@@ -19,9 +19,10 @@ namespace pu::ui {
         Medium,
         Large,
 
-        Count
+        Count,
+        MediumLarge = Medium
     };
-    
+
     /**
      * @brief Array containing the default font size values used by Plutonium components, for all DefaultFontSize values.
      */

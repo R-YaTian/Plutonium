@@ -4,6 +4,9 @@ lib/
 *.elf
 *.nacp
 *.nro
+.clangd
+compile_flags.txt
+
 *.a
 *.tar.*
 SDL_mixer.h

@@ -109,6 +109,7 @@ namespace pu::ui {
         }
 
         std::vector<sdl2::Texture> opts_texs;
+        opts_texs.reserve(this->opts.size());
         for(const auto &opt: this->opts) {
             opts_texs.push_back(render::RenderText(this->opt_font_name, opt, this->opt_clr));
         }
@@ -147,7 +148,7 @@ namespace pu::ui {
         }
         const auto title_cnt_height = this->title_top_margin + render::GetTextureHeight(this->title_tex) + render::GetTextureHeight(this->cnt_tex) + this->space_between_cnt_and_options;
         auto opt_base_y = title_cnt_height;
-    
+
         if(this->HasIcon()) {
             const auto icon_height = this->icon_height + 2 * this->icon_margin;
             if(icon_height > opt_base_y) {
